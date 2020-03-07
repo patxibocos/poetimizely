@@ -9,9 +9,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-fun main(args: Array<String>) {
-    val projectId = args[0].toLong()
-    val optimizelyToken = args[1]
+fun buildOptimizelyService(optimizelyToken: String): OptimizelyService {
     val httpClient = OkHttpClient.Builder().addInterceptor { chain ->
         val newRequest = chain.request().newBuilder().addHeader("Authorization", "Bearer $optimizelyToken").build()
         chain.proceed(newRequest)
@@ -23,10 +21,19 @@ fun main(args: Array<String>) {
         .client(httpClient)
         .build()
 
-    val service: OptimizelyService = retrofit.create(OptimizelyService::class.java)
+    return retrofit.create(OptimizelyService::class.java)
+}
+
+fun main(args: Array<String>) {
+    require(args.size == 2) { "2 arguments expected: --args=\"<optimizelyProjectId> <optimizelyToken>\"" }
+    val (projectIdString, optimizelyToken) = args
+    val projectId = requireNotNull(projectIdString.toLongOrNull()) { "optimizelyProjectId must be a number" }
+
+    val service: OptimizelyService = buildOptimizelyService(optimizelyToken)
 
     runBlocking {
-        val experiments = ListExperiments(service)(projectId)
+        val listExperiments = ListExperiments(service)
+        val experiments = listExperiments(projectId = projectId)
         experiments.forEach(::println)
     }
 }

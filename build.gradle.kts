@@ -9,10 +9,12 @@ application {
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation("com.optimizely.ab:core-api:3.4.1")
     implementation("com.squareup:kotlinpoet:1.5.0")
     implementation("com.squareup.retrofit2:retrofit:2.7.2")
     implementation("com.squareup.retrofit2:converter-gson:2.7.2")
