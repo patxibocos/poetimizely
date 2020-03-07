@@ -3,3 +3,4 @@ modules.xml
 .idea
 .gradle/
 build/
+.DS_Store
