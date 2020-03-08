@@ -4,3 +4,4 @@ modules.xml
 .gradle/
 build/
 .DS_Store
+out/

@@ -2,8 +2,13 @@
 
 package com.patxi.poetimizely
 
+import com.patxi.poetimizely.generator.Variant
+import com.patxi.poetimizely.optimizely.Experiment
 import com.patxi.poetimizely.optimizely.ListExperiments
 import com.patxi.poetimizely.optimizely.OptimizelyService
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -24,6 +29,20 @@ fun buildOptimizelyService(optimizelyToken: String): OptimizelyService {
     return retrofit.create(OptimizelyService::class.java)
 }
 
+fun buildExperimentObject(experiment: Experiment) {
+    val variantsEnum = TypeSpec.enumBuilder("${experiment.key}Variants").addSuperinterface(Variant::class).apply {
+        experiment.variations.forEach { variation ->
+            addEnumConstant(
+                variation.key,
+                TypeSpec.anonymousClassBuilder().addProperty(
+                    PropertySpec.builder("key", String::class, KModifier.OVERRIDE).initializer("%S", variation.key)
+                        .build()
+                ).build()
+            ).build()
+        }
+    }.build()
+}
+
 fun main(args: Array<String>) {
     require(args.size == 2) { "2 arguments expected: --args=\"<optimizelyProjectId> <optimizelyToken>\"" }
     val (projectIdString, optimizelyToken) = args
@@ -34,6 +53,6 @@ fun main(args: Array<String>) {
     runBlocking {
         val listExperiments = ListExperiments(service)
         val experiments = listExperiments(projectId = projectId)
-        experiments.forEach(::println)
+        experiments.forEach(::buildExperimentObject)
     }
 }

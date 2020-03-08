@@ -3,8 +3,13 @@ package com.patxi.poetimizely.generator
 import com.optimizely.ab.Optimizely
 
 class ExperimentsClient(private val optimizely: Optimizely, private val userId: String) {
-    fun <V : Variant> getVariantForExperiment(experiment: Experiment<V>): V? {
-        val variation = optimizely.activate(experiment.key, userId)
+
+    @JvmOverloads
+    fun <V : Variant> getVariantForExperiment(
+        experiment: Experiment<V>,
+        attributes: Map<String, *> = emptyMap<String, String>()
+    ): V? {
+        val variation = optimizely.activate(experiment.key, userId, attributes)
         return experiment.variants.find { it.key == variation?.key }
     }
 
