@@ -2,11 +2,12 @@
 
 package com.patxi.poetimizely
 
-import com.patxi.poetimizely.generator.Variant
 import com.patxi.poetimizely.optimizely.Experiment
 import com.patxi.poetimizely.optimizely.ListExperiments
 import com.patxi.poetimizely.optimizely.OptimizelyService
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import kotlinx.coroutines.runBlocking
@@ -30,17 +31,25 @@ fun buildOptimizelyService(optimizelyToken: String): OptimizelyService {
 }
 
 fun buildExperimentObject(experiment: Experiment) {
-    val variantsEnum = TypeSpec.enumBuilder("${experiment.key}Variants").addSuperinterface(Variant::class).apply {
-        experiment.variations.forEach { variation ->
-            addEnumConstant(
-                variation.key,
-                TypeSpec.anonymousClassBuilder().addProperty(
-                    PropertySpec.builder("key", String::class, KModifier.OVERRIDE).initializer("%S", variation.key)
-                        .build()
+    val variantsEnumClassName = ClassName("", "${experiment.key}Variants")
+    val variantsEnum = TypeSpec.enumBuilder(variantsEnumClassName)
+        .addSuperinterface(com.patxi.poetimizely.generator.Variant::class).apply {
+            experiment.variations.forEach { variation ->
+                addEnumConstant(
+                    variation.key,
+                    TypeSpec.anonymousClassBuilder().addProperty(
+                        PropertySpec.builder("key", String::class, KModifier.OVERRIDE).initializer("%S", variation.key)
+                            .build()
+                    ).build()
                 ).build()
-            ).build()
-        }
-    }.build()
+            }
+        }.build()
+
+    val variantClazz = com.patxi.poetimizely.generator.Variant::class.java
+    val experimentObjectClassName =
+        ClassName(variantClazz.`package`.name, variantClazz.simpleName).parameterizedBy(variantsEnumClassName)
+    val experimentObject = TypeSpec.objectBuilder(experiment.key)
+        .addSuperinterface(experimentObjectClassName).build()
 }
 
 fun main(args: Array<String>) {
@@ -49,7 +58,6 @@ fun main(args: Array<String>) {
     val projectId = requireNotNull(projectIdString.toLongOrNull()) { "optimizelyProjectId must be a number" }
 
     val service: OptimizelyService = buildOptimizelyService(optimizelyToken)
-
     runBlocking {
         val listExperiments = ListExperiments(service)
         val experiments = listExperiments(projectId = projectId)
