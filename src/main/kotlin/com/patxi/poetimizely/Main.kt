@@ -5,15 +5,13 @@ package com.patxi.poetimizely
 import com.patxi.poetimizely.optimizely.Experiment
 import com.patxi.poetimizely.optimizely.ListExperiments
 import com.patxi.poetimizely.optimizely.OptimizelyService
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeSpec
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 
 fun buildOptimizelyService(optimizelyToken: String): OptimizelyService {
     val httpClient = OkHttpClient.Builder().addInterceptor { chain ->
@@ -30,7 +28,7 @@ fun buildOptimizelyService(optimizelyToken: String): OptimizelyService {
     return retrofit.create(OptimizelyService::class.java)
 }
 
-fun buildExperimentObject(experiment: Experiment) {
+fun buildExperimentObject(experiment: Experiment): File {
     val variantsEnumClassName = ClassName("", "${experiment.key}Variants")
     val variantsEnum = TypeSpec.enumBuilder(variantsEnumClassName)
         .addSuperinterface(com.patxi.poetimizely.generator.Variant::class).apply {
@@ -45,11 +43,22 @@ fun buildExperimentObject(experiment: Experiment) {
             }
         }.build()
 
-    val variantClazz = com.patxi.poetimizely.generator.Variant::class.java
+    val experimentClazz = com.patxi.poetimizely.generator.Experiment::class.java
     val experimentObjectClassName =
-        ClassName(variantClazz.`package`.name, variantClazz.simpleName).parameterizedBy(variantsEnumClassName)
+        ClassName(experimentClazz.`package`.name, experimentClazz.simpleName).parameterizedBy(variantsEnumClassName)
+    val arrayClassName =  ClassName("kotlin", "Array")
+    val listOfVariants = arrayClassName.parameterizedBy(variantsEnumClassName)
+
     val experimentObject = TypeSpec.objectBuilder(experiment.key)
-        .addSuperinterface(experimentObjectClassName).build()
+        .addSuperinterface(experimentObjectClassName).addProperty(
+            PropertySpec.builder("key", String::class, KModifier.OVERRIDE).initializer("%S", experiment.key).build()
+        ).addProperty(
+            PropertySpec.builder("variants", listOfVariants, KModifier.OVERRIDE).initializer(CodeBlock.of("${variantsEnumClassName}.values()")).build()
+        ).build()
+
+    return File(experiment.key).also { file ->
+        FileSpec.builder("", experiment.key).addType(variantsEnum).addType(experimentObject).build().writeTo(file)
+    }
 }
 
 fun main(args: Array<String>) {
@@ -61,6 +70,8 @@ fun main(args: Array<String>) {
     runBlocking {
         val listExperiments = ListExperiments(service)
         val experiments = listExperiments(projectId = projectId)
-        experiments.forEach(::buildExperimentObject)
+        experiments.forEach {
+            buildExperimentObject(it)
+        }
     }
 }
