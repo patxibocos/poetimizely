@@ -1,6 +1,5 @@
-package com.patxi.poetimizely
+package com.patxi.poetimizely.generator
 
-import com.patxi.poetimizely.generator.buildExperimentObject
 import com.patxi.poetimizely.optimizely.Experiment
 import com.patxi.poetimizely.optimizely.Variation
 import io.kotest.core.spec.style.StringSpec

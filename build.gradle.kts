@@ -20,7 +20,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.7.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.4")
 
-    testImplementation("io.kotest:kotest-runner-junit5-jvm:4.0.0-BETA2")
+    testImplementation("io.kotest:kotest-runner-junit5-jvm:4.0.0-BETA3")
 }
 
 tasks.withType<Test> {
