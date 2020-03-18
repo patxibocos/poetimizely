@@ -1,4 +1,4 @@
-package com.patxi.poetimizely.generator
+package com.patxi.poetimizely.generator.base
 
 import com.optimizely.ab.Optimizely
 
