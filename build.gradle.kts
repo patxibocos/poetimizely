@@ -24,5 +24,10 @@ dependencies {
 }
 
 tasks.withType<Test> {
+    val testExperimentKey = "ExperimentKey"
+    systemProperty("testExperimentKey", testExperimentKey)
     useJUnitPlatform()
+    if (project.hasProperty("excludeTests")) {
+        exclude(project.property("excludeTests").toString())
+    }
 }
