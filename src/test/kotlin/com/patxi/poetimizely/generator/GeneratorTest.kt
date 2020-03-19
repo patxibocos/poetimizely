@@ -4,12 +4,12 @@ import com.patxi.poetimizely.generator.base.Variant
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.inspectors.forAll
 import io.kotest.matchers.shouldBe
+import java.io.File
+import java.net.URLClassLoader
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
-import java.io.File
-import java.net.URLClassLoader
 
 class GeneratorTest : StringSpec({
     "Experiment code is properly generated" {

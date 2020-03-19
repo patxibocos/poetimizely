@@ -33,6 +33,7 @@ buildscript {
     dependencies {
         classpath("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
     }
+    apply(file("gradle/ktlint.gradle.kts"))
 }
 
 val experimentGeneratedCodeData = mapOf(
