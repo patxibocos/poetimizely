@@ -2,8 +2,13 @@ package com.patxi.poetimizely.generator
 
 import com.patxi.poetimizely.generator.base.Variant
 import com.patxi.poetimizely.optimizely.Experiment
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
 import java.io.StringWriter
 
 fun buildExperimentObject(experiment: Experiment): String {
@@ -32,7 +37,7 @@ fun buildExperimentObject(experiment: Experiment): String {
             PropertySpec.builder("key", String::class, KModifier.OVERRIDE).initializer("%S", experiment.key).build()
         ).addProperty(
             PropertySpec.builder("variants", listOfVariants, KModifier.OVERRIDE)
-                .initializer(CodeBlock.of("${variantsEnumClassName}.values()")).build()
+                .initializer(CodeBlock.of("$variantsEnumClassName.values()")).build()
         ).build()
 
     val appendable: Appendable = StringWriter()

@@ -10,5 +10,4 @@ interface OptimizelyService {
 
     @GET("experiments")
     suspend fun listExperiments(@Query("project_id") projectId: Long): List<Experiment>
-
 }
