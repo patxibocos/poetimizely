@@ -23,5 +23,5 @@ jobs:
     - uses: actions/checkout@v2
 
     # Runs a single command using the runners shell
-    - name: Gradle clean + build + test
-      run: ./gradlew clean build test
+    - name: Gradle test
+      run: ./gradlew generatorSetup && ./gradlew test
