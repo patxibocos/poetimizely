@@ -45,12 +45,17 @@ val experimentGeneratedCodeData = mapOf(
 val serializedData: String = run {
     val json = Json(JsonConfiguration.Stable)
     val mapSerializer = MapSerializer(String.serializer(), String.serializer())
-    json.stringify(mapSerializer, experimentGeneratedCodeData)
+    val jsonString = json.stringify(mapSerializer, experimentGeneratedCodeData)
+    if (org.gradle.internal.os.OperatingSystem.current().isWindows) {
+        jsonString.replace("\"", "\\\"")
+    } else {
+        jsonString
+    }
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
-    systemProperty("experimentGeneratedCodeData", serializedData.replace("\"", "\\\""))
+    systemProperty("experimentGeneratedCodeData", serializedData)
 }
 
 tasks.named<Test>("test") {
