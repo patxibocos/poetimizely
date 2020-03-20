@@ -1,6 +1,7 @@
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 
 plugins {
     id("application")
@@ -42,14 +43,14 @@ val experimentGeneratedCodeData = mapOf(
     "variationKey" to "TEST_VARIATION"
 )
 val serializedData: String = run {
-    val json = Json(kotlinx.serialization.json.JsonConfiguration.Stable)
+    val json = Json(JsonConfiguration.Stable)
     val mapSerializer = MapSerializer(String.serializer(), String.serializer())
     json.stringify(mapSerializer, experimentGeneratedCodeData)
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
-    systemProperty("experimentGeneratedCodeData", serializedData)
+    systemProperty("experimentGeneratedCodeData", serializedData.replace("\"", "\\\""))
 }
 
 tasks.named<Test>("test") {
