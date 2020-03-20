@@ -1,40 +1,54 @@
 package com.patxi.poetimizely.generator
 
 import com.patxi.poetimizely.generator.base.Variant
-import io.kotest.core.spec.style.StringSpec
-import io.kotest.inspectors.forAll
-import io.kotest.matchers.shouldBe
-import java.io.File
-import java.net.URLClassLoader
-import kotlinx.serialization.builtins.MapSerializer
-import kotlinx.serialization.builtins.serializer
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
+import com.patxi.poetimizely.optimizely.Variation
+import com.tschuchort.compiletesting.KotlinCompilation
+import com.tschuchort.compiletesting.SourceFile
+import io.kotlintest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotlintest.matchers.collections.shouldHaveSize
+import io.kotlintest.matchers.types.shouldBeInstanceOf
+import io.kotlintest.shouldBe
+import io.kotlintest.specs.BehaviorSpec
+import com.patxi.poetimizely.generator.base.Experiment as GeneratorExperiment
+import com.patxi.poetimizely.optimizely.Experiment as OptimizelyExperiment
 
-class GeneratorTest : StringSpec({
-    "Experiment code is properly generated" {
-        val json = Json(JsonConfiguration.Stable)
-        val mapSerializer = MapSerializer(String.serializer(), String.serializer())
-        val data = json.parse(mapSerializer, System.getProperty("experimentGeneratedCodeData"))
-        val fileUrl = File(data.getValue("path")).toURI().toURL()
-        val classLoader: ClassLoader = URLClassLoader(arrayOf(fileUrl))
-        val experimentKey = data.getValue("experimentKey")
-        val variationKey = data.getValue("variationKey")
+class GeneratorTest : BehaviorSpec({
 
-        val experimentClass = classLoader.loadClass(experimentKey)
-        val variantsClass = classLoader.loadClass("${experimentKey}Variants")
+    fun compileKotlinCode(fileName: String, kotlinSourceCode: String): KotlinCompilation.Result {
+        val kotlinSource = SourceFile.kotlin(fileName, kotlinSourceCode)
+        return KotlinCompilation().apply {
+            sources = listOf(kotlinSource)
+            inheritClassPath = true
+            messageOutputStream = System.out
+        }.compile()
+    }
 
-        val variantsEnumConstants = variantsClass.enumConstants
-        variantsEnumConstants.size shouldBe 1
-        variantsEnumConstants.forAll {
-            (it is Variant) shouldBe true
-            (it as Variant).key shouldBe variationKey
+    given("An Optimizely experiment") {
+        val experimentKey = "TEST_EXPERIMENT"
+        val variationKey = "TEST_VARIATION"
+        val optimizelyExperiment = OptimizelyExperiment(experimentKey, variations = listOf(Variation(variationKey)))
+        `when`("Generating code for experiment and its variants") {
+            val experimentCode = buildExperimentObject(optimizelyExperiment)
+            then("Generated code compiles") {
+                val compilationResult = compileKotlinCode("Experiment.kt", experimentCode)
+                // Assert compilation was successful
+                compilationResult.exitCode shouldBe KotlinCompilation.ExitCode.OK
+                // Assert Variants enum
+                val variantsClass = compilationResult.classLoader.loadClass("${experimentKey}Variants")
+                with(variantsClass.enumConstants) {
+                    this shouldHaveSize optimizelyExperiment.variations.size
+                    this.shouldBeInstanceOf<Array<Variant>>()
+                    this.map { (it as Variant).key } shouldContainExactlyInAnyOrder optimizelyExperiment.variations.map { it.key }
+                }
+                // Assert Experiment object
+                val experimentClass = compilationResult.classLoader.loadClass(experimentKey)
+                with(experimentClass.getField("INSTANCE")) {
+                    this.get(null).shouldBeInstanceOf<GeneratorExperiment<*>>()
+                    val generatedExperiment = (this.get(null) as GeneratorExperiment<*>)
+                    generatedExperiment.key shouldBe experimentKey
+                    generatedExperiment.variants shouldBe variantsClass.enumConstants
+                }
+            }
         }
-
-        val instanceField = experimentClass.getField("INSTANCE")
-        (instanceField.get(null) is com.patxi.poetimizely.generator.base.Experiment<*>) shouldBe true
-        val experiment = (instanceField.get(null) as com.patxi.poetimizely.generator.base.Experiment<*>)
-        experiment.key shouldBe experimentKey
-        experiment.variants shouldBe variantsEnumConstants
     }
 })

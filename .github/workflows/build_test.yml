@@ -24,7 +24,7 @@ jobs:
 
     # Runs a single command using the runners shell
     - name: Gradle test
-      run: ./gradlew generatorSetup && ./gradlew test
+      run: ./gradlew test
 
     # Ktlint
     - name: Ktlint
