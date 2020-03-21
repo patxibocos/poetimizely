@@ -49,10 +49,10 @@ class GeneratorTest : BehaviorSpec({
                     generatedExperiment.key shouldBe experimentKey
                     generatedExperiment.variants shouldBe variantsClass.enumConstants
 
-                    val code = buildOptimizelyClient(listOf(generatedExperiment::class))
+                    val optimizelyClientCode = buildOptimizelyClient(listOf(generatedExperiment::class))
                     compileKotlinCode(
                         "Experiment.kt" to experimentCode,
-                        "BLABLABLA.kt" to code
+                        "OptimizelyClient.kt" to optimizelyClientCode
                     ).exitCode shouldBe KotlinCompilation.ExitCode.OK
                 }
             }
