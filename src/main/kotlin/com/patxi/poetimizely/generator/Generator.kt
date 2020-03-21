@@ -1,15 +1,12 @@
 package com.patxi.poetimizely.generator
 
+import com.patxi.poetimizely.generator.base.ExperimentsClient
 import com.patxi.poetimizely.generator.base.Variant
 import com.patxi.poetimizely.optimizely.Experiment
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeSpec
 import java.io.StringWriter
+import kotlin.reflect.KClass
 
 fun buildExperimentObject(experiment: Experiment): String {
     val variantsEnumClassName = ClassName("", "${experiment.key}Variants")
@@ -42,5 +39,20 @@ fun buildExperimentObject(experiment: Experiment): String {
 
     val appendable: Appendable = StringWriter()
     FileSpec.builder("", experiment.key).addType(variantsEnum).addType(experimentObject).build().writeTo(appendable)
+    return appendable.toString()
+}
+
+fun buildOptimizelyClient(experimentClasses: List<KClass<out com.patxi.poetimizely.generator.base.Experiment<Variant>>>): String {
+    val parameterizedExperiment = com.patxi.poetimizely.generator.base.Experiment::class.parameterizedBy(Variant::class)
+    ClassName("kotlin.collections", "List").parameterizedBy(parameterizedExperiment)
+    val experimentClientTypeSpec =
+        TypeSpec.classBuilder("TestExperimentsClient")//.addSuperinterface(ExperimentsClient::class)
+            .addFunction(
+                FunSpec.builder("getAllExperiments")/*.addModifiers(KModifier.OVERRIDE)*/
+                    .addStatement("return listOf(${experimentClasses.map { it.qualifiedName }.joinToString()})")
+                    .build()
+            ).build()
+    val appendable: Appendable = StringWriter()
+    FileSpec.builder("", "TestExperimentsClient").addType(experimentClientTypeSpec).build().writeTo(appendable)
     return appendable.toString()
 }

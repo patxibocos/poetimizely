@@ -14,10 +14,10 @@ import com.patxi.poetimizely.optimizely.Experiment as OptimizelyExperiment
 
 class GeneratorTest : BehaviorSpec({
 
-    fun compileKotlinCode(fileName: String, kotlinSourceCode: String): KotlinCompilation.Result {
-        val kotlinSource = SourceFile.kotlin(fileName, kotlinSourceCode)
+    fun compileKotlinCode(vararg sourceCode: Pair<String, String>): KotlinCompilation.Result {
+        val kotlinSource = sourceCode.map { SourceFile.kotlin(it.first, it.second) }
         return KotlinCompilation().apply {
-            sources = listOf(kotlinSource)
+            sources = kotlinSource
             inheritClassPath = true
             messageOutputStream = System.out
         }.compile()
@@ -30,7 +30,7 @@ class GeneratorTest : BehaviorSpec({
         `when`("Generating code for experiment and its variants") {
             val experimentCode = buildExperimentObject(optimizelyExperiment)
             then("Generated code compiles") {
-                val compilationResult = compileKotlinCode("Experiment.kt", experimentCode)
+                val compilationResult = compileKotlinCode("Experiment.kt" to experimentCode)
                 // Assert compilation was successful
                 compilationResult.exitCode shouldBe KotlinCompilation.ExitCode.OK
                 // Assert Variants enum
@@ -43,10 +43,17 @@ class GeneratorTest : BehaviorSpec({
                 // Assert Experiment object
                 val experimentClass = compilationResult.classLoader.loadClass(experimentKey)
                 with(experimentClass.getField("INSTANCE")) {
-                    this.get(null).shouldBeInstanceOf<GeneratorExperiment<*>>()
-                    val generatedExperiment = (this.get(null) as GeneratorExperiment<*>)
+                    this.get(null).shouldBeInstanceOf<GeneratorExperiment<Variant>>()
+                    @Suppress("UNCHECKED_CAST")
+                    val generatedExperiment = (this.get(null) as GeneratorExperiment<Variant>)
                     generatedExperiment.key shouldBe experimentKey
                     generatedExperiment.variants shouldBe variantsClass.enumConstants
+
+                    val code = buildOptimizelyClient(listOf(generatedExperiment::class))
+                    compileKotlinCode(
+                        "Experiment.kt" to experimentCode,
+                        "BLABLABLA.kt" to code
+                    ).exitCode shouldBe KotlinCompilation.ExitCode.OK
                 }
             }
         }
