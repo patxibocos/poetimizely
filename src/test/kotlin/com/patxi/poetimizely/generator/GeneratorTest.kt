@@ -4,20 +4,20 @@ import com.patxi.poetimizely.generator.base.Variant
 import com.patxi.poetimizely.optimizely.Variation
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
-import io.kotlintest.matchers.collections.shouldContainExactlyInAnyOrder
-import io.kotlintest.matchers.collections.shouldHaveSize
-import io.kotlintest.matchers.types.shouldBeInstanceOf
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.BehaviorSpec
+import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import com.patxi.poetimizely.generator.base.Experiment as GeneratorExperiment
 import com.patxi.poetimizely.optimizely.Experiment as OptimizelyExperiment
 
 class GeneratorTest : BehaviorSpec({
 
-    fun compileKotlinCode(fileName: String, kotlinSourceCode: String): KotlinCompilation.Result {
-        val kotlinSource = SourceFile.kotlin(fileName, kotlinSourceCode)
+    fun compileKotlinCode(vararg sourceCode: Pair<String, String>): KotlinCompilation.Result {
+        val kotlinSource = sourceCode.map { SourceFile.kotlin(it.first, it.second) }
         return KotlinCompilation().apply {
-            sources = listOf(kotlinSource)
+            sources = kotlinSource
             inheritClassPath = true
             messageOutputStream = System.out
         }.compile()
@@ -30,24 +30,30 @@ class GeneratorTest : BehaviorSpec({
         `when`("Generating code for experiment and its variants") {
             val experimentCode = buildExperimentObject(optimizelyExperiment)
             then("Generated code compiles") {
-                val compilationResult = compileKotlinCode("Experiment.kt", experimentCode)
-                // Assert compilation was successful
-                compilationResult.exitCode shouldBe KotlinCompilation.ExitCode.OK
-                // Assert Variants enum
-                val variantsClass = compilationResult.classLoader.loadClass("${experimentKey}Variants")
+                val experimentCompilationResult = compileKotlinCode("Experiment.kt" to experimentCode)
+                experimentCompilationResult.exitCode shouldBe KotlinCompilation.ExitCode.OK
+                val variantsClass = experimentCompilationResult.classLoader.loadClass("${experimentKey}Variants")
                 with(variantsClass.enumConstants) {
                     this shouldHaveSize optimizelyExperiment.variations.size
                     this.shouldBeInstanceOf<Array<Variant>>()
                     this.map { (it as Variant).key } shouldContainExactlyInAnyOrder optimizelyExperiment.variations.map { it.key }
                 }
-                // Assert Experiment object
-                val experimentClass = compilationResult.classLoader.loadClass(experimentKey)
-                with(experimentClass.getField("INSTANCE")) {
-                    this.get(null).shouldBeInstanceOf<GeneratorExperiment<*>>()
-                    val generatedExperiment = (this.get(null) as GeneratorExperiment<*>)
-                    generatedExperiment.key shouldBe experimentKey
-                    generatedExperiment.variants shouldBe variantsClass.enumConstants
-                }
+
+                val experimentClass = experimentCompilationResult.classLoader.loadClass(experimentKey)
+                experimentClass.getField("INSTANCE").get(null).shouldBeInstanceOf<GeneratorExperiment<Variant>>()
+                @Suppress("UNCHECKED_CAST")
+                val experimentObject = experimentClass.getField("INSTANCE").get(null) as GeneratorExperiment<Variant>
+                experimentObject.key shouldBe experimentKey
+                experimentObject.variants shouldBe variantsClass.enumConstants
+
+                val experimentsClientCode = buildExperimentsClient(listOf(experimentObject::class))
+                val experimentsClientCompilationResult = compileKotlinCode(
+                    "Experiment.kt" to experimentCode,
+                    "ExperimentsClient.kt" to experimentsClientCode
+                )
+                experimentsClientCompilationResult.exitCode shouldBe KotlinCompilation.ExitCode.OK
+                val experimentsClientClass =
+                    experimentsClientCompilationResult.classLoader.loadClass("TestExperimentsClient")
             }
         }
     }

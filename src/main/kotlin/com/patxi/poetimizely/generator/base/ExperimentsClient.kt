@@ -2,7 +2,7 @@ package com.patxi.poetimizely.generator.base
 
 import com.optimizely.ab.Optimizely
 
-class ExperimentsClient(private val optimizely: Optimizely, private val userId: String) {
+abstract class ExperimentsClient(private val optimizely: Optimizely, private val userId: String) {
 
     @JvmOverloads
     fun <V : Variant> getVariantForExperiment(
@@ -13,7 +13,5 @@ class ExperimentsClient(private val optimizely: Optimizely, private val userId: 
         return experiment.variants.find { it.key == variation?.key }
     }
 
-    fun getExperiments(): List<Experiment<*>> {
-        return emptyList()
-    }
+    abstract fun getAllExperiments(): List<Experiment<out Variant>>
 }
