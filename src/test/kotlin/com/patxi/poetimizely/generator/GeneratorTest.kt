@@ -4,11 +4,11 @@ import com.patxi.poetimizely.generator.base.Variant
 import com.patxi.poetimizely.optimizely.Variation
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
-import io.kotlintest.matchers.collections.shouldContainExactlyInAnyOrder
-import io.kotlintest.matchers.collections.shouldHaveSize
-import io.kotlintest.matchers.types.shouldBeInstanceOf
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.BehaviorSpec
+import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import com.patxi.poetimizely.generator.base.Experiment as GeneratorExperiment
 import com.patxi.poetimizely.optimizely.Experiment as OptimizelyExperiment
 

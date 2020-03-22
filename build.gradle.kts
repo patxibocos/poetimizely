@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id("application")
     kotlin("jvm") version "1.3.70"
@@ -21,7 +23,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.4")
 
     testImplementation("com.github.tschuchortdev:kotlin-compile-testing:1.2.7")
-    testImplementation("io.kotlintest:kotlintest-runner-junit5:3.4.2")
+    testImplementation("io.kotest:kotest-runner-junit5-jvm:4.0.0-BETA3")
+    testImplementation("io.kotest:kotest-assertions-core-jvm:4.0.0-BETA3")
 }
 
 buildscript {
@@ -30,4 +33,8 @@ buildscript {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "1.8"
 }
