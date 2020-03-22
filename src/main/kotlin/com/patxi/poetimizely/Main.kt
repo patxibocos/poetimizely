@@ -5,7 +5,6 @@ package com.patxi.poetimizely
 import com.patxi.poetimizely.generator.Generator
 import com.patxi.poetimizely.optimizely.OptimizelyService
 import com.patxi.poetimizely.optimizely.buildOptimizelyService
-import com.patxi.poetimizely.optimizely.listExperiments
 import kotlinx.coroutines.runBlocking
 
 fun main(args: Array<String>) {
@@ -16,7 +15,7 @@ fun main(args: Array<String>) {
     val service: OptimizelyService = buildOptimizelyService(optimizelyToken)
     val generator = Generator()
     runBlocking {
-        val experiments = listExperiments(projectId, service)
+        val experiments = service.listExperiments(projectId)
         experiments.forEach {
             generator.buildExperimentObject(it)
         }

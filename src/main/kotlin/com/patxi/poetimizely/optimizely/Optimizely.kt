@@ -18,6 +18,3 @@ fun buildOptimizelyService(optimizelyToken: String): OptimizelyService {
 
     return retrofit.create(OptimizelyService::class.java)
 }
-
-suspend fun listExperiments(projectId: Long, service: OptimizelyService): List<Experiment> =
-    service.listExperiments(projectId)
