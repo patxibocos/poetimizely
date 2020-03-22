@@ -50,7 +50,7 @@ fun buildExperimentObject(experiment: Experiment, packageName: String = ""): Str
     }.toString()
 }
 
-fun buildOptimizelyClient(
+fun buildExperimentsClient(
     experimentClasses: List<KClass<out GeneratorExperiment<Variant>>>,
     packageName: String = ""
 ): String {
