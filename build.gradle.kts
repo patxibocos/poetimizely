@@ -25,6 +25,7 @@ dependencies {
     testImplementation("com.github.tschuchortdev:kotlin-compile-testing:1.2.7")
     testImplementation("io.kotest:kotest-runner-junit5-jvm:4.0.0-BETA3")
     testImplementation("io.kotest:kotest-assertions-core-jvm:4.0.0-BETA3")
+    testImplementation("io.mockk:mockk:1.9.3")
 }
 
 buildscript {

@@ -2,7 +2,7 @@
 
 package com.patxi.poetimizely
 
-import com.patxi.poetimizely.generator.buildExperimentObject
+import com.patxi.poetimizely.generator.Generator
 import com.patxi.poetimizely.optimizely.OptimizelyService
 import com.patxi.poetimizely.optimizely.buildOptimizelyService
 import com.patxi.poetimizely.optimizely.listExperiments
@@ -14,10 +14,11 @@ fun main(args: Array<String>) {
     val projectId = requireNotNull(projectIdString.toLongOrNull()) { "optimizelyProjectId must be a number" }
 
     val service: OptimizelyService = buildOptimizelyService(optimizelyToken)
+    val generator = Generator()
     runBlocking {
         val experiments = listExperiments(projectId, service)
         experiments.forEach {
-            buildExperimentObject(it)
+            generator.buildExperimentObject(it)
         }
     }
 }
