@@ -1,7 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+group = "com.patxi"
+version = "1.0.0-SNAPSHOT"
+
 plugins {
-    groovy
+    `java-gradle-plugin`
     kotlin("jvm") version "1.3.70"
 }
 
@@ -12,8 +15,6 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation(gradleApi())
-    implementation(localGroovy())
 
     implementation("com.optimizely.ab:core-api:3.4.1")
     implementation("com.squareup:kotlinpoet:1.5.0")
@@ -37,4 +38,13 @@ tasks.withType<Test> {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+gradlePlugin {
+    plugins {
+        create("poetimizely") {
+            id = "com.patxi.poetimizely"
+            implementationClass = "com.patxi.poetimizely.PoetimizelyPlugin"
+        }
+    }
 }
