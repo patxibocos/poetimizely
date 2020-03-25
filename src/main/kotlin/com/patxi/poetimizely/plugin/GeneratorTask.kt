@@ -6,19 +6,17 @@ import com.patxi.poetimizely.optimizely.buildExperimentsService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-import javax.inject.Inject
 
-open class GeneratorTask @Inject constructor(
-    private val optimizelyProjectId: Long,
-    private val optimizelyToken: String
-) : DefaultTask() {
+open class GeneratorTask : DefaultTask() {
+    var optimizelyProjectId: Long? = null
+    var optimizelyToken: String? = null
 
     @TaskAction
     fun doAction() {
-        val service: ExperimentsService = buildExperimentsService(optimizelyToken)
+        val service: ExperimentsService = buildExperimentsService(requireNotNull(optimizelyToken))
         val generator = Generator()
         runBlocking {
-            val experiments = service.listExperiments(optimizelyProjectId)
+            val experiments = service.listExperiments(requireNotNull(optimizelyProjectId))
             experiments.forEach {
                 generator.buildExperimentObject(it)
             }

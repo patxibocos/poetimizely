@@ -9,13 +9,9 @@ class PoetimizelyPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         val extension = project.extensions.create(POETIMIZELY_EXTENSION_NAME, PoetimizelyExtension::class.java)
-        project.afterEvaluate {
-            project.tasks.register(
-                "poetimize",
-                GeneratorTask::class.java,
-                extension.optimizelyProjectId,
-                extension.optimizelyToken
-            )
+        project.tasks.register("poetimize", GeneratorTask::class.java) { task: GeneratorTask ->
+            task.optimizelyProjectId = extension.optimizelyProjectId
+            task.optimizelyToken = extension.optimizelyToken
         }
     }
 }
