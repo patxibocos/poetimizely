@@ -1,31 +1,39 @@
 package com.patxi.poetimizely.plugin
 
-import io.kotest.core.spec.style.WordSpec
+import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldContainIgnoringCase
 import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.TaskOutcome
 import java.nio.file.Files
 
-class BuildScriptTest : WordSpec({
+class BuildScriptTest : BehaviorSpec({
 
-    "A build script configuring the plugin" should {
-        "build correctly" {
-            val projectDir = Files.createTempDirectory("")
-            val buildScript = projectDir.resolve("build.gradle").toFile()
+    given("A project directory") {
+        val projectDir = Files.createTempDirectory("")
+        val buildScript = projectDir.resolve("build.gradle.kts").toFile()
+        and("A build script applying the plugin without configuration") {
             buildScript.writeText(
                 """
                 plugins { 
-                    id 'com.patxi.poetimizely'
-                }
-                
-                poetimizely {
-                    optimizelyProjectId = 111L
-                    optimizelyToken = 'TOKEN'
+                    id("com.patxi.poetimizely")
                 }
             """.trimIndent()
             )
-            GradleRunner.create()
-                .withProjectDir(projectDir.toFile())
-                .withPluginClasspath()
-                .build()
+            `when`("Poetimize task runs") {
+                val buildResult = GradleRunner.create()
+                    .withProjectDir(projectDir.toFile())
+                    .withPluginClasspath()
+                    .withArguments(":poetimize")
+                    .build()
+                then("Generator tasks runs but it skips as the configuration is missing") {
+                    val poetimizeBuildTask = buildResult.tasks.find { it.path == ":poetimize" }
+                    poetimizeBuildTask shouldNotBe null
+                    poetimizeBuildTask?.outcome shouldBe TaskOutcome.SUCCESS
+                    buildResult.output.shouldContainIgnoringCase("skipping")
+                }
+            }
         }
     }
 })

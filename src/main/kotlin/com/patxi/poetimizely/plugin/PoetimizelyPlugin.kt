@@ -15,7 +15,3 @@ class PoetimizelyPlugin : Plugin<Project> {
         }
     }
 }
-
-internal fun Project.poetimizely(): PoetimizelyExtension =
-    extensions.getByName(POETIMIZELY_EXTENSION_NAME) as? PoetimizelyExtension
-        ?: throw IllegalStateException("$POETIMIZELY_EXTENSION_NAME is not of the correct type")

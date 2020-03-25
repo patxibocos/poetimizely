@@ -16,7 +16,7 @@ class PoetimizelyPluginTest : BehaviorSpec({
                 project.plugins.getPlugin(PoetimizelyPlugin::class.java) shouldNotBe null
             }
             then("Extension is contained") {
-                project.poetimizely() shouldNotBe null
+                project.extensions.getByName("poetimizely").shouldBeInstanceOf<PoetimizelyExtension>()
             }
             then("Task is contained") {
                 val generatorTask = project.getTasksByName("poetimize", false)

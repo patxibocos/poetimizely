@@ -13,10 +13,16 @@ open class GeneratorTask : DefaultTask() {
 
     @TaskAction
     fun doAction() {
-        val service: ExperimentsService = buildExperimentsService(requireNotNull(optimizelyToken))
+        val optimizelyProjectId = optimizelyProjectId
+        val optimizelyToken = optimizelyToken
+        if (optimizelyProjectId == null || optimizelyToken == null) {
+            logger.error("Skipping generator task as missing required arguments")
+            return
+        }
+        val service: ExperimentsService = buildExperimentsService(optimizelyToken)
         val generator = Generator()
         runBlocking {
-            val experiments = service.listExperiments(requireNotNull(optimizelyProjectId))
+            val experiments = service.listExperiments(optimizelyProjectId)
             experiments.forEach {
                 generator.buildExperimentObject(it)
             }
