@@ -44,7 +44,7 @@ gradlePlugin {
     plugins {
         create("poetimizely") {
             id = "com.patxi.poetimizely"
-            implementationClass = "com.patxi.poetimizely.PoetimizelyPlugin"
+            implementationClass = "com.patxi.poetimizely.plugin.PoetimizelyPlugin"
         }
     }
 }
