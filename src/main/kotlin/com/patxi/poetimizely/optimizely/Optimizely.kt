@@ -4,7 +4,13 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-fun buildOptimizelyService(optimizelyToken: String): OptimizelyService {
+fun buildExperimentsService(optimizelyToken: String): ExperimentsService =
+    authedRetrofit(optimizelyToken).create(ExperimentsService::class.java)
+
+fun buildFeaturesService(optimizelyToken: String): FeaturesService =
+    authedRetrofit(optimizelyToken).create(FeaturesService::class.java)
+
+private fun authedRetrofit(optimizelyToken: String): Retrofit {
     val httpClient = OkHttpClient.Builder().addInterceptor { chain ->
         val newRequest = chain.request().newBuilder().addHeader("Authorization", "Bearer $optimizelyToken").build()
         chain.proceed(newRequest)
@@ -15,6 +21,5 @@ fun buildOptimizelyService(optimizelyToken: String): OptimizelyService {
         .addConverterFactory(GsonConverterFactory.create())
         .client(httpClient)
         .build()
-
-    return retrofit.create(OptimizelyService::class.java)
+    return retrofit
 }
