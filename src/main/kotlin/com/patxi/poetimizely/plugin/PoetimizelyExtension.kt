@@ -1,6 +1,6 @@
 package com.patxi.poetimizely.plugin
 
 open class PoetimizelyExtension(
-    var optimizelyProjectId: Long? = null,
-    var optimizelyToken: String? = null
+    var optimizelyProjectId: Long = 0L,
+    var optimizelyToken: String = ""
 )

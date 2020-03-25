@@ -1,6 +1,7 @@
 package com.patxi.poetimizely.plugin
 
 import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.matchers.collections.shouldBeSingleton
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.gradle.testfixtures.ProjectBuilder
@@ -18,7 +19,9 @@ class PoetimizelyPluginTest : BehaviorSpec({
                 project.poetimizely() shouldNotBe null
             }
             then("Task is contained") {
-                project.tasks.getByName("poetimize").shouldBeInstanceOf<GeneratorTask>()
+                val generatorTask = project.getTasksByName("poetimize", false)
+                generatorTask.shouldBeSingleton()
+                generatorTask.first().shouldBeInstanceOf<GeneratorTask>()
             }
         }
     }
