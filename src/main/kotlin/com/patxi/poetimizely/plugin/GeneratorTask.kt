@@ -1,17 +1,26 @@
 package com.patxi.poetimizely.plugin
 
+import com.patxi.poetimizely.generator.Generator
+import com.patxi.poetimizely.optimizely.OptimizelyService
+import com.patxi.poetimizely.optimizely.buildOptimizelyService
+import kotlinx.coroutines.runBlocking
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-import javax.inject.Inject
 
-open class GeneratorTask @Inject constructor(
-    val optimizelyProjectId: Long,
-    val optimizelyToken: String
-) : DefaultTask() {
+open class GeneratorTask : DefaultTask() {
+
+    private val optimizelyProjectId = project.poetimizely().optimizelyProjectId
+    private val optimizelyToken = project.poetimizely().optimizelyToken
 
     @TaskAction
     fun doAction() {
-        println("optimizelyProjectId: $optimizelyProjectId")
-        println("optimizelyToken: $optimizelyToken")
+        val service: OptimizelyService = buildOptimizelyService(requireNotNull(optimizelyToken))
+        val generator = Generator()
+        runBlocking {
+            val experiments = service.listExperiments(requireNotNull(optimizelyProjectId))
+            experiments.forEach {
+                generator.buildExperimentObject(it)
+            }
+        }
     }
 }
