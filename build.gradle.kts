@@ -5,6 +5,7 @@ version = "1.0.0-SNAPSHOT"
 
 plugins {
     `java-gradle-plugin`
+    jacoco
     kotlin("jvm") version "1.3.70"
 }
 
@@ -41,11 +42,23 @@ tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
 
+tasks.test {
+    finalizedBy("jacocoTestReport")
+}
+
 gradlePlugin {
     plugins {
         create("poetimizely") {
             id = "com.patxi.poetimizely"
             implementationClass = "com.patxi.poetimizely.plugin.PoetimizelyPlugin"
         }
+    }
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.isEnabled = true
+        csv.isEnabled = false
+        xml.destination = file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
     }
 }
