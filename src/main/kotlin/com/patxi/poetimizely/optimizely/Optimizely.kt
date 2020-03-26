@@ -10,16 +10,15 @@ fun buildExperimentsService(optimizelyToken: String): ExperimentsService =
 fun buildFeaturesService(optimizelyToken: String): FeaturesService =
     authedRetrofit(optimizelyToken).create(FeaturesService::class.java)
 
-private fun authedRetrofit(optimizelyToken: String): Retrofit {
+fun authedRetrofit(optimizelyToken: String): Retrofit {
     val httpClient = OkHttpClient.Builder().addInterceptor { chain ->
         val newRequest = chain.request().newBuilder().addHeader("Authorization", "Bearer $optimizelyToken").build()
         chain.proceed(newRequest)
     }.build()
 
-    val retrofit = Retrofit.Builder()
+    return Retrofit.Builder()
         .baseUrl("https://api.optimizely.com/v2/")
         .addConverterFactory(GsonConverterFactory.create())
         .client(httpClient)
         .build()
-    return retrofit
 }
