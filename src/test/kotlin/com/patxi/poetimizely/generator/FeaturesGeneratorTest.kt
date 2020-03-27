@@ -1,7 +1,7 @@
 package com.patxi.poetimizely.generator
 
 import com.optimizely.ab.Optimizely
-import com.patxi.poetimizely.generator.base.FeaturesClient
+import com.patxi.poetimizely.generator.base.BaseFeaturesClient
 import com.patxi.poetimizely.optimizely.Feature
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
@@ -42,9 +42,9 @@ class FeaturesGeneratorTest : BehaviorSpec({
                         )
                     }
                     val featuresClientClass =
-                        compilationResult.classLoader.loadClass("$packageName.TestFeaturesClient")
+                        compilationResult.classLoader.loadClass("$packageName.FeaturesClient")
                     featuresClientClass.constructors.first().newInstance(mockk<Optimizely>(), "")
-                        .shouldBeInstanceOf<FeaturesClient<*>>()
+                        .shouldBeInstanceOf<BaseFeaturesClient<*>>()
                 }
             }
         }

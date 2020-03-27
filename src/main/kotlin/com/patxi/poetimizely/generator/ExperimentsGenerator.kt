@@ -1,8 +1,9 @@
 package com.patxi.poetimizely.generator
 
 import com.optimizely.ab.Optimizely
-import com.patxi.poetimizely.generator.base.ExperimentsClient
-import com.patxi.poetimizely.generator.base.Variant
+import com.patxi.poetimizely.generator.base.BaseExperiment
+import com.patxi.poetimizely.generator.base.BaseExperimentsClient
+import com.patxi.poetimizely.generator.base.BaseVariant
 import com.patxi.poetimizely.optimizely.Experiment
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -13,14 +14,13 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import java.io.StringWriter
-import com.patxi.poetimizely.generator.base.Experiment as GeneratorExperiment
 
-class Generator(private val packageName: String = "") {
+class ExperimentsGenerator(private val packageName: String = "") {
 
     fun buildExperimentObject(experiment: Experiment): String {
         val variantsEnumClassName = ClassName(packageName, "${experiment.key}Variants")
         val variantsEnum = TypeSpec.enumBuilder(variantsEnumClassName)
-            .addSuperinterface(Variant::class).apply {
+            .addSuperinterface(BaseVariant::class).apply {
                 experiment.variations.forEach { variation ->
                     addEnumConstant(
                         variation.key,
@@ -33,7 +33,7 @@ class Generator(private val packageName: String = "") {
                 }
             }.build()
 
-        val experimentClazz = GeneratorExperiment::class.java
+        val experimentClazz = BaseExperiment::class.java
         val experimentObjectClassName =
             ClassName(experimentClazz.`package`.name, experimentClazz.simpleName).parameterizedBy(variantsEnumClassName)
         val arrayClassName = ClassName("kotlin", "Array")
@@ -54,12 +54,12 @@ class Generator(private val packageName: String = "") {
 
     fun buildExperimentsClient(experimentObjectNames: List<String>): String {
         val experimentClientTypeSpec =
-            TypeSpec.classBuilder(ClassName(packageName, "TestExperimentsClient"))
+            TypeSpec.classBuilder(ClassName(packageName, "ExperimentsClient"))
                 .primaryConstructor(
                     FunSpec.constructorBuilder().addParameter("optimizely", Optimizely::class)
                         .addParameter("userId", String::class).build()
                 )
-                .superclass(ExperimentsClient::class)
+                .superclass(BaseExperimentsClient::class)
                 .addSuperclassConstructorParameter("optimizely")
                 .addSuperclassConstructorParameter("userId")
                 .addFunction(
@@ -67,7 +67,7 @@ class Generator(private val packageName: String = "") {
                         .addStatement("return listOf(${experimentObjectNames.joinToString()})").build()
                 ).build()
         return StringWriter().also { appendable: Appendable ->
-            FileSpec.builder(packageName, "TestExperimentsClient").addType(experimentClientTypeSpec).build()
+            FileSpec.builder(packageName, "ExperimentsClient").addType(experimentClientTypeSpec).build()
                 .writeTo(appendable)
         }.toString()
     }

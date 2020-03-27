@@ -1,7 +1,8 @@
 package com.patxi.poetimizely.generator
 
 import com.optimizely.ab.Optimizely
-import com.patxi.poetimizely.generator.base.FeaturesClient
+import com.patxi.poetimizely.generator.base.BaseFeature
+import com.patxi.poetimizely.generator.base.BaseFeaturesClient
 import com.patxi.poetimizely.optimizely.Feature
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
@@ -12,7 +13,6 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import java.io.StringWriter
-import com.patxi.poetimizely.generator.base.Feature as GeneratorFeature
 
 /**
  * The functionality to parse features to type safe code
@@ -59,7 +59,7 @@ private fun String.optimizelyFeatureKeyToEnumConstant(): String =
 private fun featuresEnumTypeSpec(features: List<Feature>, className: ClassName): TypeSpec =
     // enum Features
     TypeSpec.enumBuilder(className)
-        .addSuperinterface(GeneratorFeature::class)
+        .addSuperinterface(BaseFeature::class)
         .also { typeSpecBuilder ->
             // each feature is a const with the key
             features.forEach {
@@ -82,12 +82,12 @@ private fun featuresEnumTypeSpec(features: List<Feature>, className: ClassName):
  * ) : FeaturesClient<Features>(optimizely, userId)
  */
 private fun featuresClientTypeSpec(featuresEnumTypeName: TypeName): TypeSpec {
-    val featuresClientClazz = FeaturesClient::class.java
+    val featuresClientClazz = BaseFeaturesClient::class.java
     val featuresClientClassName =
         ClassName(featuresClientClazz.`package`.name, featuresClientClazz.simpleName).parameterizedBy(
             featuresEnumTypeName
         )
-    return TypeSpec.classBuilder("TestFeaturesClient")
+    return TypeSpec.classBuilder("FeaturesClient")
         .superclass(featuresClientClassName)
         .addSuperclassConstructorParameter("optimizely")
         .addSuperclassConstructorParameter("userId")
