@@ -1,29 +1,35 @@
 package com.patxi.poetimizely.generator
 
 import com.optimizely.ab.Optimizely
+import com.patxi.poetimizely.generator.base.FeaturesClient
 import com.patxi.poetimizely.optimizely.Feature
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import java.io.StringWriter
+import com.patxi.poetimizely.generator.base.Feature as GeneratorFeature
 
 /**
  * The functionality to parse features to type safe code
  * is designed and documented in https://docs.google.com/document/d/1XJap6OKnzAM-C4GoL1Ubs2zKRzJSlIdzcvddOOE2Z7Q.
  */
 class FeaturesGenerator(private val packageName: String = "") {
-    fun build(features: List<Feature>): String =
-        FileSpec.builder(packageName, "Features")
-            .addType(featuresEnumTypeSpec(features))
-            .addType(featuresClientTypeSpec(packageName))
+    fun build(features: List<Feature>): String {
+        val featuresEnumTypeName = ClassName(packageName, "Features")
+        return FileSpec.builder(packageName, "Features")
+            .addType(featuresEnumTypeSpec(features, featuresEnumTypeName))
+            .addType(featuresClientTypeSpec(featuresEnumTypeName))
             .build().run {
                 StringWriter().also { appendable: Appendable ->
                     this.writeTo(appendable)
                 }.toString()
             }
+    }
 }
 
 /**
@@ -43,31 +49,26 @@ private fun String.optimizelyFeatureKeyToEnumConstant(): String =
 
 /**
  * This will produce something that looks like this:
- * enum class Features(val key: String) {
- *    NEW_CHECKOUT_PAGE("new_checkout_page"),
+ * enum class Features : Feature {
+ *     NEW_CHECKOUT_PAGE {
+ *         override val key: String = "new_checkout_page"
+ *     },
  *    ...
  * }
  */
-private fun featuresEnumTypeSpec(features: List<Feature>): TypeSpec =
+private fun featuresEnumTypeSpec(features: List<Feature>, className: ClassName): TypeSpec =
     // enum Features
-    TypeSpec.enumBuilder("Features")
-        // with constructor(val key: String)
-        .primaryConstructor(
-            FunSpec.constructorBuilder()
-                .addParameter("key", String::class)
-                .build()
-        ).addProperty(
-            PropertySpec.builder("key", String::class)
-                .initializer("key")
-                .build()
-        ).also { typeSpecBuilder ->
+    TypeSpec.enumBuilder(className)
+        .addSuperinterface(GeneratorFeature::class)
+        .also { typeSpecBuilder ->
             // each feature is a const with the key
             features.forEach {
                 typeSpecBuilder.addEnumConstant(
                     it.key.optimizelyFeatureKeyToEnumConstant(),
-                    TypeSpec.anonymousClassBuilder()
-                        .addSuperclassConstructorParameter("%S", it.key)
-                        .build()
+                    TypeSpec.anonymousClassBuilder().addProperty(
+                        PropertySpec.builder("key", String::class, KModifier.OVERRIDE)
+                            .initializer("%S", it.key).build()
+                    ).build()
                 )
             }
         }.build()
@@ -75,36 +76,25 @@ private fun featuresEnumTypeSpec(features: List<Feature>): TypeSpec =
 /**
  * This will produce something like this.
  *
- * class FeaturesClient(
- *    private val optimizely: Optimizely,
- *    private val userId: String
- * ) {
- *    fun isFeatureEnabled(feature: Features): Boolean =
- *        optimizely.isFeatureEnabled(feature.key, userId)
- * }
+ * class TestFeaturesClient(
+ *     optimizely: Optimizely,
+ *     userId: String
+ * ) : FeaturesClient<Features>(optimizely, userId)
  */
-private fun featuresClientTypeSpec(packageName: String): TypeSpec =
-    TypeSpec.classBuilder("FeaturesClient")
+private fun featuresClientTypeSpec(featuresEnumTypeName: TypeName): TypeSpec {
+    val featuresClientClazz = FeaturesClient::class.java
+    val featuresClientClassName =
+        ClassName(featuresClientClazz.`package`.name, featuresClientClazz.simpleName).parameterizedBy(
+            featuresEnumTypeName
+        )
+    return TypeSpec.classBuilder("TestFeaturesClient")
+        .superclass(featuresClientClassName)
+        .addSuperclassConstructorParameter("optimizely")
+        .addSuperclassConstructorParameter("userId")
         .primaryConstructor(
             FunSpec.constructorBuilder()
                 .addParameter("optimizely", Optimizely::class)
                 .addParameter("userId", String::class)
                 .build()
-        )
-        .addProperty(
-            PropertySpec.builder("optimizely", Optimizely::class, KModifier.PRIVATE)
-                .initializer("optimizely")
-                .build()
-        )
-        .addProperty(
-            PropertySpec.builder("userId", String::class, KModifier.PRIVATE)
-                .initializer("userId")
-                .build()
-        )
-        .addFunction(
-            FunSpec.builder("isFeatureEnabled")
-                .addParameter("feature", ClassName(packageName, "Features"))
-                .returns(Boolean::class)
-                .addStatement("return optimizely.isFeatureEnabled(feature.key, userId)")
-                .build()
         ).build()
+}

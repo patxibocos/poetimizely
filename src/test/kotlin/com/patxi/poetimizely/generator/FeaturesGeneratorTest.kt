@@ -1,12 +1,15 @@
 package com.patxi.poetimizely.generator
 
 import com.optimizely.ab.Optimizely
+import com.patxi.poetimizely.generator.base.FeaturesClient
 import com.patxi.poetimizely.optimizely.Feature
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
+import io.mockk.mockk
 
 class FeaturesGeneratorTest : BehaviorSpec({
 
@@ -39,16 +42,9 @@ class FeaturesGeneratorTest : BehaviorSpec({
                         )
                     }
                     val featuresClientClass =
-                        compilationResult.classLoader.loadClass("$packageName.FeaturesClient")
-                    with(featuresClientClass.constructors.first().parameters) {
-                        this shouldHaveSize 2
-                        this[0].type shouldBe Optimizely::class.java
-                        this[1].type shouldBe String::class.java
-                    }
-                    with(featuresClientClass.methods.first()) {
-                        this.name shouldBe "isFeatureEnabled"
-                        this.parameters.first().type.toString() shouldBe "class what.ever.pack.age.Features"
-                    }
+                        compilationResult.classLoader.loadClass("$packageName.TestFeaturesClient")
+                    featuresClientClass.constructors.first().newInstance(mockk<Optimizely>(), "")
+                        .shouldBeInstanceOf<FeaturesClient<*>>()
                 }
             }
         }
