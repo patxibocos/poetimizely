@@ -38,9 +38,8 @@ class FeaturesGenerator(private val packageName: String = "") {
  *
  * The key will be used "to determine whether the feature is on or off in your code".
  */
-private fun String.optimizelyFeatureKeyToEnumConstant() =
-    split("-", "_")
-        .joinToString("_") { it.trim().toUpperCase() }
+private fun String.optimizelyFeatureKeyToEnumConstant(): String =
+    split("-", "_").joinToString("_") { it.trim().toUpperCase() }
 
 /**
  * This will produce something that looks like this:
