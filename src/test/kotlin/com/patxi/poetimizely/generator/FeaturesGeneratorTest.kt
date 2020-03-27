@@ -29,6 +29,7 @@ class FeaturesGeneratorTest : BehaviorSpec({
                 then("Generated code compiles") {
                     compilationResult.exitCode shouldBe KotlinCompilation.ExitCode.OK
                     val featuresEnum = compilationResult.classLoader.loadClass("$packageName.Features")
+                    featuresEnum.isEnum shouldBe true
                     with(featuresEnum.enumConstants) {
                         this shouldHaveSize features.size
                         (this[0] as Enum<*>).name shouldBe "NEW_CHECKOUT_PAGE"
