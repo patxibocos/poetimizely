@@ -16,16 +16,14 @@ import java.io.StringWriter
  */
 class FeaturesGenerator(private val packageName: String = "") {
     fun build(features: List<Feature>): String =
-        with(
-            FileSpec.builder(packageName, "Features")
-                .addType(featuresEnumTypeSpec(features))
-                .addType(featuresClientTypeSpec(packageName))
-                .build()
-        ) {
-            return StringWriter().also { appendable: Appendable ->
-                this.writeTo(appendable)
-            }.toString()
-        }
+        FileSpec.builder(packageName, "Features")
+            .addType(featuresEnumTypeSpec(features))
+            .addType(featuresClientTypeSpec(packageName))
+            .build().run {
+                StringWriter().also { appendable: Appendable ->
+                    this.writeTo(appendable)
+                }.toString()
+            }
 }
 
 /**
