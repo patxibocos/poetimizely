@@ -50,9 +50,9 @@ private fun String.optimizelyFeatureKeyToEnumConstant(): String =
  */
 private fun featuresEnumTypeSpec(features: List<Feature>): TypeSpec =
     // enum Features
-    with(TypeSpec.enumBuilder("Features")) {
+    TypeSpec.enumBuilder("Features")
         // with constructor(val key: String)
-        this.primaryConstructor(
+        .primaryConstructor(
             FunSpec.constructorBuilder()
                 .addParameter("key", String::class)
                 .build()
@@ -60,18 +60,17 @@ private fun featuresEnumTypeSpec(features: List<Feature>): TypeSpec =
             PropertySpec.builder("key", String::class)
                 .initializer("key")
                 .build()
-        )
-    }.also { typeSpecBuilder ->
-        // each feature is a const with the key
-        features.forEach {
-            typeSpecBuilder.addEnumConstant(
-                it.key.optimizelyFeatureKeyToEnumConstant(),
-                TypeSpec.anonymousClassBuilder()
-                    .addSuperclassConstructorParameter("%S", it.key)
-                    .build()
-            )
-        }
-    }.build()
+        ).also { typeSpecBuilder ->
+            // each feature is a const with the key
+            features.forEach {
+                typeSpecBuilder.addEnumConstant(
+                    it.key.optimizelyFeatureKeyToEnumConstant(),
+                    TypeSpec.anonymousClassBuilder()
+                        .addSuperclassConstructorParameter("%S", it.key)
+                        .build()
+                )
+            }
+        }.build()
 
 /**
  * This will produce something like this.
