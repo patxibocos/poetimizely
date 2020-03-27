@@ -32,9 +32,11 @@ class FeaturesGeneratorTest : BehaviorSpec({
                     featuresEnum.isEnum shouldBe true
                     with(featuresEnum.enumConstants) {
                         this shouldHaveSize features.size
-                        (this[0] as Enum<*>).name shouldBe "NEW_CHECKOUT_PAGE"
-                        (this[1] as Enum<*>).name shouldBe "NEW_LOGIN_PAGE"
-                        (this[2] as Enum<*>).name shouldBe "NEW_SIGN_UP_PAGE"
+                        this.map { (it as Enum<*>).name } shouldBe listOf(
+                            "NEW_CHECKOUT_PAGE",
+                            "NEW_LOGIN_PAGE",
+                            "NEW_SIGN_UP_PAGE"
+                        )
                     }
                     val featuresClientClass =
                         compilationResult.classLoader.loadClass("$packageName.FeaturesClient")
