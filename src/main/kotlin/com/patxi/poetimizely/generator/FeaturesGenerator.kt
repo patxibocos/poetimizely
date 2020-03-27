@@ -2,7 +2,12 @@ package com.patxi.poetimizely.generator
 
 import com.optimizely.ab.Optimizely
 import com.patxi.poetimizely.optimizely.Feature
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
 import java.io.StringWriter
 
 /**
