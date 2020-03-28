@@ -2,6 +2,7 @@ package com.patxi.poetimizely.plugin
 
 import com.patxi.poetimizely.generator.Generator
 import com.patxi.poetimizely.optimizely.ExperimentsService
+import com.patxi.poetimizely.optimizely.authenticatedRetrofit
 import com.patxi.poetimizely.optimizely.buildExperimentsService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.DefaultTask
@@ -19,7 +20,8 @@ open class GeneratorTask : DefaultTask() {
             logger.error("Skipping generator task as missing required arguments")
             return
         }
-        val service: ExperimentsService = buildExperimentsService(optimizelyToken)
+        val authenticatedRetrofit = authenticatedRetrofit(optimizelyToken)
+        val service: ExperimentsService = buildExperimentsService(authenticatedRetrofit)
         val generator = Generator()
         runBlocking {
             val experiments = service.listExperiments(optimizelyProjectId)

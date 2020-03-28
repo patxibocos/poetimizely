@@ -4,13 +4,13 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-fun buildExperimentsService(optimizelyToken: String): ExperimentsService =
-    authedRetrofit(optimizelyToken).create(ExperimentsService::class.java)
+fun buildExperimentsService(retrofit: Retrofit): ExperimentsService =
+    retrofit.create(ExperimentsService::class.java)
 
-fun buildFeaturesService(optimizelyToken: String): FeaturesService =
-    authedRetrofit(optimizelyToken).create(FeaturesService::class.java)
+fun buildFeaturesService(retrofit: Retrofit): FeaturesService =
+    retrofit.create(FeaturesService::class.java)
 
-fun authedRetrofit(optimizelyToken: String): Retrofit {
+fun authenticatedRetrofit(optimizelyToken: String): Retrofit {
     val httpClient = OkHttpClient.Builder().addInterceptor { chain ->
         val newRequest = chain.request().newBuilder().addHeader("Authorization", "Bearer $optimizelyToken").build()
         chain.proceed(newRequest)
