@@ -2,16 +2,16 @@ package com.patxi.poetimizely.generator.base
 
 import com.optimizely.ab.Optimizely
 
-abstract class ExperimentsClient(private val optimizely: Optimizely, private val userId: String) {
+abstract class BaseExperimentsClient(private val optimizely: Optimizely, private val userId: String) {
 
     @JvmOverloads
-    fun <V : Variant> getVariantForExperiment(
-        experiment: Experiment<V>,
+    fun <V : BaseVariant> getVariantForExperiment(
+        experiment: BaseExperiment<V>,
         attributes: Map<String, *> = emptyMap<String, String>()
     ): V? {
         val variation = optimizely.activate(experiment.key, userId, attributes)
         return experiment.variants.find { it.key == variation?.key }
     }
 
-    abstract fun getAllExperiments(): List<Experiment<out Variant>>
+    abstract fun getAllExperiments(): List<BaseExperiment<out BaseVariant>>
 }

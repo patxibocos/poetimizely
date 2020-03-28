@@ -18,9 +18,9 @@ class FeaturesGeneratorTest : BehaviorSpec({
         )
         and("A FeaturesGenerator for a package") {
             val packageName = "what.ever.pack.age"
-            val generator = FeaturesGenerator(packageName)
+            val featuresGenerator = FeaturesGenerator(packageName)
             `when`("Compiling the generated code for features") {
-                val featuresCode = generator.build(features)
+                val featuresCode = featuresGenerator.build(features)
                 val compilationResult = KotlinCompilation().apply {
                     sources = listOf(SourceFile.kotlin("Features.kt", featuresCode))
                     inheritClassPath = true

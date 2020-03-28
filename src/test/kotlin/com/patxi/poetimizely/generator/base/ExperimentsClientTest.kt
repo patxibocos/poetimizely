@@ -8,7 +8,7 @@ import io.mockk.mockk
 
 class ExperimentsClientTest : BehaviorSpec({
     given("An experiment with two variants") {
-        val experiment = object : Experiment<ExperimentVariants> {
+        val experiment = object : BaseExperiment<ExperimentVariants> {
             override val key = "Experiment"
             override val variants = ExperimentVariants.values()
         }
@@ -19,7 +19,7 @@ class ExperimentsClientTest : BehaviorSpec({
                     every { key } returns ExperimentVariants.Variant1.key
                 }
             }
-            val experimentsClient: ExperimentsClient = object : ExperimentsClient(optimizelyMock, userId) {
+            val experimentsClient: BaseExperimentsClient = object : BaseExperimentsClient(optimizelyMock, userId) {
                 override fun getAllExperiments() = listOf(experiment)
             }
             `when`("Getting the variant for the experiment") {
@@ -32,7 +32,7 @@ class ExperimentsClientTest : BehaviorSpec({
     }
 })
 
-private enum class ExperimentVariants : Variant {
+private enum class ExperimentVariants : BaseVariant {
     Variant1 {
         override val key = "Variant1"
     },

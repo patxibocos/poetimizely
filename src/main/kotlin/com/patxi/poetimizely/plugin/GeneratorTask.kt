@@ -1,6 +1,6 @@
 package com.patxi.poetimizely.plugin
 
-import com.patxi.poetimizely.generator.Generator
+import com.patxi.poetimizely.generator.ExperimentsGenerator
 import com.patxi.poetimizely.optimizely.ExperimentsService
 import com.patxi.poetimizely.optimizely.authenticatedRetrofit
 import com.patxi.poetimizely.optimizely.buildExperimentsService
@@ -22,12 +22,10 @@ open class GeneratorTask : DefaultTask() {
         }
         val authenticatedRetrofit = authenticatedRetrofit(optimizelyToken)
         val service: ExperimentsService = buildExperimentsService(authenticatedRetrofit)
-        val generator = Generator()
+        val experimentsGenerator = ExperimentsGenerator()
         runBlocking {
             val experiments = service.listExperiments(optimizelyProjectId)
-            experiments.forEach {
-                generator.buildExperimentObject(it)
-            }
+            experimentsGenerator.build(experiments)
         }
     }
 }
