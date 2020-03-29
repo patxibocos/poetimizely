@@ -2,7 +2,6 @@ package com.patxi.poetimizely.generator
 
 import com.optimizely.ab.Optimizely
 import com.patxi.poetimizely.generator.base.BaseExperiment
-import com.patxi.poetimizely.generator.base.BaseExperimentsClient
 import com.patxi.poetimizely.generator.base.BaseVariant
 import com.patxi.poetimizely.optimizely.OptimizelyExperiment
 import com.patxi.poetimizely.optimizely.OptimizelyVariation
@@ -11,10 +10,14 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.TypeVariableName
+import com.squareup.kotlinpoet.WildcardTypeName
 import java.io.StringWriter
+import kotlin.reflect.KClass
 
 class ExperimentsGenerator(private val packageName: String = "") {
 
@@ -56,9 +59,8 @@ class ExperimentsGenerator(private val packageName: String = "") {
         optimizelyExperiment: OptimizelyExperiment
     ): TypeSpec =
         TypeSpec.objectBuilder(ClassName(packageName, optimizelyExperiment.key)).apply {
-            val experimentClazz = BaseExperiment::class.java
             val experimentObjectClassName =
-                ClassName(experimentClazz.`package`.name, experimentClazz.simpleName).parameterizedBy(
+                BaseExperiment::class.className().parameterizedBy(
                     variantsEnumClassName
                 )
             addSuperinterface(experimentObjectClassName).addProperty(
@@ -77,14 +79,57 @@ class ExperimentsGenerator(private val packageName: String = "") {
     private fun buildExperimentsClient(optimizelyExperiments: List<OptimizelyExperiment>): TypeSpec =
         TypeSpec.classBuilder(ClassName(packageName, "ExperimentsClient"))
             .primaryConstructor(
-                FunSpec.constructorBuilder().addParameter("optimizely", Optimizely::class)
-                    .addParameter("userId", String::class).build()
+                FunSpec.constructorBuilder()
+                    .addParameter("optimizely", Optimizely::class)
+                    .addParameter("userId", String::class)
+                    .build()
             )
-            .superclass(BaseExperimentsClient::class)
-            .addSuperclassConstructorParameter("optimizely")
-            .addSuperclassConstructorParameter("userId")
+            .addProperty(
+                PropertySpec.builder("optimizely", Optimizely::class, KModifier.PRIVATE)
+                    .initializer("optimizely")
+                    .build()
+            )
+            .addProperty(
+                PropertySpec.builder("userId", String::class, KModifier.PRIVATE)
+                    .initializer("userId")
+                    .build()
+            )
+            // This function builds the following:
+            // fun getAllExperiments(): List<BaseExperiment<out BaseVariant>> = listOf(...)
             .addFunction(
-                FunSpec.builder("getAllExperiments").addModifiers(KModifier.OVERRIDE)
-                    .addStatement("return listOf(${optimizelyExperiments.joinToString { it.key }})").build()
-            ).build()
+                FunSpec.builder("getAllExperiments")
+                    .returns(
+                        ClassName("kotlin.collections", "List").parameterizedBy(
+                            BaseExperiment::class.className().parameterizedBy(
+                                WildcardTypeName.producerOf(BaseVariant::class)
+                            )
+                        )
+                    )
+                    .addStatement("return listOf(${optimizelyExperiments.joinToString { it.key }})")
+                    .build()
+            )
+            .addFunction(
+                TypeVariableName("V", BaseVariant::class).let { variantTypeName ->
+                    FunSpec.builder("getVariantForExperiment")
+                        .addTypeVariable(variantTypeName)
+                        .returns(variantTypeName.copy(nullable = true))
+                        .addParameter(
+                            "experiment",
+                            BaseExperiment::class.className()
+                                .parameterizedBy(WildcardTypeName.producerOf(variantTypeName))
+                        )
+                        .addParameter(
+                            ParameterSpec.Companion.builder(
+                                "attributes",
+                                Map::class.parameterizedBy(String::class, Any::class)
+                            ).defaultValue(CodeBlock.of("emptyMap()")).build()
+                        )
+                        .addStatement("val variation = optimizely.activate(experiment.key, userId, attributes)")
+                        .addStatement("return experiment.variants.find { it.key == variation?.key }")
+                        .build()
+                }
+            )
+            .build()
 }
+
+private fun KClass<*>.className(): ClassName = ClassName(this.java.`package`.name, this.java.simpleName)

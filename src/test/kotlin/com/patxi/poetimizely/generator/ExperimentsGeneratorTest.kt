@@ -2,20 +2,17 @@ package com.patxi.poetimizely.generator
 
 import com.optimizely.ab.Optimizely
 import com.patxi.poetimizely.generator.base.BaseExperiment
-import com.patxi.poetimizely.generator.base.BaseExperimentsClient
 import com.patxi.poetimizely.generator.base.BaseVariant
 import com.patxi.poetimizely.optimizely.OptimizelyExperiment
 import com.patxi.poetimizely.optimizely.OptimizelyVariation
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import io.kotest.core.spec.style.BehaviorSpec
-import io.kotest.matchers.collections.shouldBeSingleton
-import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.shouldBeInstanceOf
-import io.mockk.mockk
 
 class ExperimentsGeneratorTest : BehaviorSpec({
 
@@ -51,12 +48,14 @@ class ExperimentsGeneratorTest : BehaviorSpec({
                     experimentObject.variants shouldBe variantsClass.enumConstants
                     val experimentsClientClass =
                         compilationResult.classLoader.loadClass("$packageName.ExperimentsClient")
-                    experimentsClientClass.constructors.first().newInstance(mockk<Optimizely>(), "")
-                        .shouldBeInstanceOf<BaseExperimentsClient> { experimentsClient ->
-                            val allExperiments = experimentsClient.getAllExperiments()
-                            allExperiments.shouldBeSingleton()
-                            allExperiments.map { it.javaClass }.shouldContainExactly(experimentObject::class.java)
-                        }
+                    experimentsClientClass.constructors shouldHaveSize 1
+                    with(experimentsClientClass.constructors.first().parameters) {
+                        this shouldHaveSize 2
+                        this[0].type shouldBe Optimizely::class.java
+                        this[1].type shouldBe String::class.java
+                    }
+                    experimentsClientClass.methods.find { it.name == "getAllExperiments" } shouldNotBe null
+                    experimentsClientClass.methods.find { it.name == "getVariantForExperiment" } shouldNotBe null
                 }
             }
         }

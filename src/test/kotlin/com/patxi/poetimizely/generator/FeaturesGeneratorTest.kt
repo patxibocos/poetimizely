@@ -47,7 +47,7 @@ class FeaturesGeneratorTest : BehaviorSpec({
                     }
                     with(featuresClientClass.methods.first()) {
                         this.name shouldBe "isFeatureEnabled"
-                        this.parameters.first().type.toString() shouldBe "class what.ever.pack.age.Features"
+                        this.parameters.first().type shouldBe featuresEnum
                     }
                 }
             }
