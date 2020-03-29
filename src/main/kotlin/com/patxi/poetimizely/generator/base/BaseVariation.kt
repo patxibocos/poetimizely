@@ -1,5 +1,5 @@
 package com.patxi.poetimizely.generator.base
 
-interface BaseVariant {
+interface BaseVariation {
     val key: String
 }

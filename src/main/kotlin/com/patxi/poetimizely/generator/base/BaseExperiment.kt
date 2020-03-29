@@ -1,6 +1,6 @@
 package com.patxi.poetimizely.generator.base
 
-interface BaseExperiment<V : BaseVariant> {
+interface BaseExperiment<V : BaseVariation> {
     val key: String
-    val variants: Array<V>
+    val variations: Array<V>
 }

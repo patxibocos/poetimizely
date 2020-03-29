@@ -2,7 +2,7 @@ package com.patxi.poetimizely.generator
 
 import com.optimizely.ab.Optimizely
 import com.patxi.poetimizely.generator.base.BaseExperiment
-import com.patxi.poetimizely.generator.base.BaseVariant
+import com.patxi.poetimizely.generator.base.BaseVariation
 import com.patxi.poetimizely.optimizely.OptimizelyExperiment
 import com.patxi.poetimizely.optimizely.OptimizelyVariation
 import com.squareup.kotlinpoet.ClassName
@@ -21,13 +21,14 @@ import kotlin.reflect.KClass
 
 class ExperimentsGenerator(private val packageName: String = "") {
 
-    fun build(optimizelyExperiments: List<OptimizelyExperiment>): String =
+    fun generate(optimizelyExperiments: List<OptimizelyExperiment>): String =
         FileSpec.builder(packageName, "Experiments")
             .apply {
                 optimizelyExperiments.forEach { experiment ->
-                    val variantsEnumClassName = ClassName(packageName, "${experiment.key}Variants")
-                    addType(experimentVariantsEnumTypeSpec(variantsEnumClassName, experiment.variations))
-                    addType(experimentObjectTypeSpec(variantsEnumClassName, experiment))
+                    val variationsEnumClassName =
+                        ClassName(packageName, experiment.key.optimizelyExperimentKeyToVariationEnumName())
+                    addType(experimentVariationsEnumTypeSpec(variationsEnumClassName, experiment.variations))
+                    addType(experimentObjectTypeSpec(variationsEnumClassName, experiment))
                 }
                 addType(buildExperimentsClient(optimizelyExperiments))
             }.build().run {
@@ -36,15 +37,15 @@ class ExperimentsGenerator(private val packageName: String = "") {
                 }.toString()
             }
 
-    private fun experimentVariantsEnumTypeSpec(
-        variantsEnumClassName: ClassName,
+    private fun experimentVariationsEnumTypeSpec(
+        variationsEnumClassName: ClassName,
         optimizelyVariations: Collection<OptimizelyVariation>
     ): TypeSpec =
-        TypeSpec.enumBuilder(variantsEnumClassName)
-            .addSuperinterface(BaseVariant::class).apply {
+        TypeSpec.enumBuilder(variationsEnumClassName)
+            .addSuperinterface(BaseVariation::class).apply {
                 optimizelyVariations.forEach { variation ->
                     addEnumConstant(
-                        variation.key,
+                        variation.key.optimizelyExperimentKeyToVariationEnumConstant(),
                         TypeSpec.anonymousClassBuilder().addProperty(
                             PropertySpec.builder("key", String::class, KModifier.OVERRIDE)
                                 .initializer("%S", variation.key)
@@ -55,26 +56,27 @@ class ExperimentsGenerator(private val packageName: String = "") {
             }.build()
 
     private fun experimentObjectTypeSpec(
-        variantsEnumClassName: ClassName,
+        variationsEnumClassName: ClassName,
         optimizelyExperiment: OptimizelyExperiment
     ): TypeSpec =
-        TypeSpec.objectBuilder(ClassName(packageName, optimizelyExperiment.key)).apply {
-            val experimentObjectClassName =
-                BaseExperiment::class.className().parameterizedBy(
-                    variantsEnumClassName
+        TypeSpec.objectBuilder(ClassName(packageName, optimizelyExperiment.key.optimizelyExperimentKeyToObjectName()))
+            .apply {
+                val experimentObjectClassName =
+                    BaseExperiment::class.className().parameterizedBy(
+                        variationsEnumClassName
+                    )
+                addSuperinterface(experimentObjectClassName).addProperty(
+                    PropertySpec.builder("key", String::class, KModifier.OVERRIDE)
+                        .initializer("%S", optimizelyExperiment.key)
+                        .build()
                 )
-            addSuperinterface(experimentObjectClassName).addProperty(
-                PropertySpec.builder("key", String::class, KModifier.OVERRIDE)
-                    .initializer("%S", optimizelyExperiment.key)
-                    .build()
-            )
-            val arrayClassName = ClassName("kotlin", "Array")
-            val listOfVariants = arrayClassName.parameterizedBy(variantsEnumClassName)
-            addProperty(
-                PropertySpec.builder("variants", listOfVariants, KModifier.OVERRIDE)
-                    .initializer(CodeBlock.of("$variantsEnumClassName.values()")).build()
-            )
-        }.build()
+                val arrayClassName = ClassName("kotlin", "Array")
+                val listOfVariations = arrayClassName.parameterizedBy(variationsEnumClassName)
+                addProperty(
+                    PropertySpec.builder("variations", listOfVariations, KModifier.OVERRIDE)
+                        .initializer(CodeBlock.of("$variationsEnumClassName.values()")).build()
+                )
+            }.build()
 
     private fun buildExperimentsClient(optimizelyExperiments: List<OptimizelyExperiment>): TypeSpec =
         TypeSpec.classBuilder(ClassName(packageName, "ExperimentsClient"))
@@ -95,28 +97,30 @@ class ExperimentsGenerator(private val packageName: String = "") {
                     .build()
             )
             // This function builds the following:
-            // fun getAllExperiments(): List<BaseExperiment<out BaseVariant>> = listOf(...)
+            // fun getAllExperiments(): List<BaseExperiment<out BaseVariation>> = listOf(...)
             .addFunction(
                 FunSpec.builder("getAllExperiments")
                     .returns(
                         ClassName("kotlin.collections", "List").parameterizedBy(
                             BaseExperiment::class.className().parameterizedBy(
-                                WildcardTypeName.producerOf(BaseVariant::class)
+                                WildcardTypeName.producerOf(BaseVariation::class)
                             )
                         )
                     )
-                    .addStatement("return listOf(${optimizelyExperiments.joinToString { it.key }})")
+                    .addStatement("""return listOf(${optimizelyExperiments.joinToString {
+                        it.key.optimizelyExperimentKeyToObjectName()
+                    }})""".trimIndent())
                     .build()
             )
             .addFunction(
-                TypeVariableName("V", BaseVariant::class).let { variantTypeName ->
-                    FunSpec.builder("getVariantForExperiment")
-                        .addTypeVariable(variantTypeName)
-                        .returns(variantTypeName.copy(nullable = true))
+                TypeVariableName("V", BaseVariation::class).let { variationTypeName ->
+                    FunSpec.builder("getVariationForExperiment")
+                        .addTypeVariable(variationTypeName)
+                        .returns(variationTypeName.copy(nullable = true))
                         .addParameter(
                             "experiment",
                             BaseExperiment::class.className()
-                                .parameterizedBy(WildcardTypeName.producerOf(variantTypeName))
+                                .parameterizedBy(WildcardTypeName.producerOf(variationTypeName))
                         )
                         .addParameter(
                             ParameterSpec.Companion.builder(
@@ -125,7 +129,7 @@ class ExperimentsGenerator(private val packageName: String = "") {
                             ).defaultValue(CodeBlock.of("emptyMap()")).build()
                         )
                         .addStatement("val variation = optimizely.activate(experiment.key, userId, attributes)")
-                        .addStatement("return experiment.variants.find { it.key == variation?.key }")
+                        .addStatement("return experiment.variations.find { it.key == variation?.key }")
                         .build()
                 }
             )
@@ -133,3 +137,12 @@ class ExperimentsGenerator(private val packageName: String = "") {
 }
 
 private fun KClass<*>.className(): ClassName = ClassName(this.java.`package`.name, this.java.simpleName)
+
+private fun String.optimizelyExperimentKeyToObjectName(): String =
+    split("-", "_").joinToString("") { it.toLowerCase().capitalize() }
+
+private fun String.optimizelyExperimentKeyToVariationEnumName(): String =
+    split("-", "_").joinToString("") { it.toLowerCase().capitalize() } + "Variations"
+
+private fun String.optimizelyExperimentKeyToVariationEnumConstant(): String =
+    split("-", "_").joinToString("_") { it.toUpperCase() }
