@@ -25,7 +25,7 @@ open class GeneratorTask : DefaultTask() {
         val experimentsGenerator = ExperimentsGenerator()
         runBlocking {
             val experiments = service.listExperiments(optimizelyProjectId)
-            experimentsGenerator.build(experiments)
+            experimentsGenerator.generate(experiments)
         }
     }
 }

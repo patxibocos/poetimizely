@@ -20,7 +20,7 @@ class FeaturesGeneratorTest : BehaviorSpec({
             val packageName = "what.ever.pack.age"
             val featuresGenerator = FeaturesGenerator(packageName)
             `when`("Compiling the generated code for features") {
-                val featuresCode = featuresGenerator.build(features)
+                val featuresCode = featuresGenerator.generate(features)
                 val compilationResult = KotlinCompilation().apply {
                     sources = listOf(SourceFile.kotlin("Features.kt", featuresCode))
                     inheritClassPath = true
@@ -47,7 +47,7 @@ class FeaturesGeneratorTest : BehaviorSpec({
                     }
                     with(featuresClientClass.methods.first()) {
                         this.name shouldBe "isFeatureEnabled"
-                        this.parameters.first().type.toString() shouldBe "class what.ever.pack.age.Features"
+                        this.parameters.first().type shouldBe featuresEnum
                     }
                 }
             }

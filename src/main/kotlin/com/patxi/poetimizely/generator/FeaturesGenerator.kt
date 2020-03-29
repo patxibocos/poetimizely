@@ -15,7 +15,7 @@ import java.io.StringWriter
  * is designed and documented in https://docs.google.com/document/d/1XJap6OKnzAM-C4GoL1Ubs2zKRzJSlIdzcvddOOE2Z7Q.
  */
 class FeaturesGenerator(private val packageName: String = "") {
-    fun build(features: List<Feature>): String =
+    fun generate(features: List<Feature>): String =
         FileSpec.builder(packageName, "Features")
             .addType(featuresEnumTypeSpec(features))
             .addType(featuresClientTypeSpec(packageName))
