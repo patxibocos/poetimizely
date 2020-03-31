@@ -12,6 +12,7 @@ class PoetimizelyPlugin : Plugin<Project> {
         project.tasks.register("poetimize", GeneratorTask::class.java) { task: GeneratorTask ->
             task.optimizelyProjectId = extension.optimizelyProjectId
             task.optimizelyToken = extension.optimizelyToken
+            task.packageName = extension.packageName
         }
     }
 }
