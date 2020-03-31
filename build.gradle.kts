@@ -5,6 +5,7 @@ version = "1.0.0-SNAPSHOT"
 
 plugins {
     `java-gradle-plugin`
+    id("com.gradle.plugin-publish") version "0.11.0"
     jacoco
     kotlin("jvm") version "1.3.70"
 }
@@ -50,6 +51,8 @@ gradlePlugin {
     plugins {
         create("poetimizely") {
             id = "com.patxi.poetimizely"
+            displayName = "poetimizely"
+            description = "Generate Kotlin type safe accessors for Optimizely experiments and features"
             implementationClass = "com.patxi.poetimizely.plugin.PoetimizelyPlugin"
         }
     }
@@ -61,4 +64,10 @@ tasks.jacocoTestReport {
         csv.isEnabled = false
         xml.destination = file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
     }
+}
+
+pluginBundle {
+    website = "https://github.com/patxibocos/poetimizely"
+    vcsUrl = "https://github.com/patxibocos/poetimizely"
+    tags = listOf("optimizely", "kotlin", "typesafe", "kotlinpoet")
 }
