@@ -1,7 +1,8 @@
+import com.patxi.poetimizely.poetimizelyVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.patxi"
-version = "1.0.0-SNAPSHOT"
+version = poetimizelyVersion(file("version.properties"))
 
 plugins {
     `java-gradle-plugin`
