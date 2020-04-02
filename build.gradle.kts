@@ -1,7 +1,9 @@
+import com.patxi.poetimizely.bumpVersion
+import com.patxi.poetimizely.poetimizelyVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.patxi"
-version = "1.0.0-SNAPSHOT"
+version = poetimizelyVersion()
 
 plugins {
     `java-gradle-plugin`
@@ -70,4 +72,9 @@ pluginBundle {
     website = "https://github.com/patxibocos/poetimizely"
     vcsUrl = "https://github.com/patxibocos/poetimizely"
     tags = listOf("optimizely", "kotlin", "typesafe", "kotlinpoet")
+}
+
+tasks.register("bumpVersion") {
+    val newVersion = property("version") ?: return@register
+    bumpVersion(newVersion.toString())
 }
