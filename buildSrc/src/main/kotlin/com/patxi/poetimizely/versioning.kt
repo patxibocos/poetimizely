@@ -7,7 +7,7 @@ fun poetimizelyVersion(): String = Properties().apply {
     load(getVersioningFile().inputStream())
 }.getProperty("version")
 
-fun bumpVersionTo(version: String): Unit = Properties().apply {
+fun bumpVersion(version: String): Unit = Properties().apply {
     put("version", version)
 }.store(getVersioningFile().outputStream(), null)
 
