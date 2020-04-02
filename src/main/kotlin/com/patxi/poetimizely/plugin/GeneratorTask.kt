@@ -9,7 +9,9 @@ import com.patxi.poetimizely.optimizely.buildExperimentsService
 import com.patxi.poetimizely.optimizely.buildFeaturesService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.DefaultTask
+import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.TaskAction
+import java.io.File
 
 open class GeneratorTask : DefaultTask() {
     var optimizelyProjectId: Long? = null
@@ -18,6 +20,12 @@ open class GeneratorTask : DefaultTask() {
 
     @TaskAction
     fun doAction() {
+        val mainSrcDirs =
+            project.convention.getPlugin(JavaPluginConvention::class.java).sourceSets.getByName("main").allSource.srcDirs
+        val targetDir =
+            requireNotNull(mainSrcDirs.find { it.name == "kotlin" } ?: mainSrcDirs.find { it.name == "java" }) {
+                "Cannot find a source directory for Java/Kotlin"
+            }
         val optimizelyProjectId = optimizelyProjectId
         val optimizelyToken = optimizelyToken
         val packageName = packageName
@@ -38,9 +46,17 @@ open class GeneratorTask : DefaultTask() {
         val featuresGenerator = FeaturesGenerator(packageName)
         runBlocking {
             val experiments = experimentsService.listExperiments(optimizelyProjectId)
-            experimentsGenerator.generate(experiments)
+            val experimentsCode = experimentsGenerator.generate(experiments)
             val features = featuresService.listFeatures(optimizelyProjectId)
-            featuresGenerator.generate(features)
+            val featuresCode = featuresGenerator.generate(features)
+            targetDir.toPackageFolder(packageName).also { packageDir ->
+                packageDir.mkdirs()
+                packageDir.resolve("Experiments.kt").writeText(experimentsCode)
+                packageDir.resolve("Features.kt").writeText(featuresCode)
+            }
         }
     }
 }
+
+private fun File.toPackageFolder(packageName: String): File =
+    packageName.split(".").fold(this) { acc, s -> acc.resolve(s) }

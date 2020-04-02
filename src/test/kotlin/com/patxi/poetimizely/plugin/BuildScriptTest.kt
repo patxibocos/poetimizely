@@ -17,6 +17,7 @@ class BuildScriptTest : BehaviorSpec({
             buildScript.writeText(
                 """
                 plugins { 
+                    kotlin("jvm") version "1.3.70"
                     id("com.patxi.poetimizely")
                 }
             """.trimIndent()
