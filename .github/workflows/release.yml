@@ -30,6 +30,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: $PLUGIN_VERSION
-        release_name: $PLUGIN_VERSION
-        body: https://plugins.gradle.org/plugin/com.patxi.poetimizely/$PLUGIN_VERSION
+        tag_name: ${{ env.PLUGIN_VERSION }}
+        release_name: ${{ env.PLUGIN_VERSION }}
+        body: https://plugins.gradle.org/plugin/com.patxi.poetimizely/${{ env.PLUGIN_VERSION }}
