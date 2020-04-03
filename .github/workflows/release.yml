@@ -1,0 +1,35 @@
+name: release
+
+# Triggers when a new release is created
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - 'version.properties'
+
+jobs:
+  publish_plugin:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    # Publish the plugin to Gradle Plugin Portal (key and secret are stored as secrets in the repo)
+    - name: Publish the plugin in Gradle Plugin Portal
+      run: ./gradlew publishPlugins -Pgradle.publish.key=${{ secrets.GRADLE_PUBLISH_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_PUBLISH_SECRET }}
+
+    - name: Set plugin version in an environment variable
+      run: echo ::set-env name=PLUGIN_VERSION::$(./gradlew properties --no-daemon --console=plain -q | grep "^version:" | awk '{printf $2}')
+
+    - name: Create and push the Git tag
+      run: git tag $PLUGIN_VERSION && git push origin $PLUGIN_VERSION
+
+    - name: Create GitHub release
+      uses: actions/create-release@latest
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: $PLUGIN_VERSION
+        release_name: $PLUGIN_VERSION
+        body: https://plugins.gradle.org/plugin/com.patxi.poetimizely/$PLUGIN_VERSION
