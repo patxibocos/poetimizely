@@ -75,6 +75,6 @@ pluginBundle {
 }
 
 tasks.register("bumpVersion") {
-    val newVersion = property("version") ?: return@register
+    val newVersion = project.property("newVersion") ?: return@register
     bumpVersion(newVersion.toString())
 }
