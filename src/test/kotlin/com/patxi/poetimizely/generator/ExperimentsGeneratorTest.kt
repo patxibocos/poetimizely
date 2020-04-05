@@ -1,8 +1,6 @@
 package com.patxi.poetimizely.generator
 
 import com.optimizely.ab.Optimizely
-import com.patxi.poetimizely.generator.base.BaseExperiment
-import com.patxi.poetimizely.generator.base.BaseVariation
 import com.patxi.poetimizely.optimizely.OptimizelyExperiment
 import com.patxi.poetimizely.optimizely.OptimizelyVariation
 import com.tschuchort.compiletesting.KotlinCompilation
@@ -37,16 +35,13 @@ class ExperimentsGeneratorTest : BehaviorSpec({
                         compilationResult.classLoader.loadClass("$packageName.TestExperimentVariations")
                     with(variationsClass.enumConstants) {
                         this shouldHaveSize optimizelyExperiment.variations.size
-                        this.shouldBeInstanceOf<Array<BaseVariation>>()
-                        this.map { (it as BaseVariation).key } shouldContainExactlyInAnyOrder optimizelyExperiment.variations.map { it.key }
+                        this.shouldBeInstanceOf<Array<Any>>()
+                        this.map { it.getFieldValue("key") as String } shouldContainExactlyInAnyOrder optimizelyExperiment.variations.map { it.key }
                     }
                     val experimentClass = compilationResult.classLoader.loadClass("$packageName.TestExperiment")
-                    experimentClass.getField("INSTANCE").get(null).shouldBeInstanceOf<BaseExperiment<BaseVariation>>()
-                    @Suppress("UNCHECKED_CAST")
-                    val experimentObject =
-                        experimentClass.getField("INSTANCE").get(null) as BaseExperiment<BaseVariation>
-                    experimentObject.key shouldBe experimentKey
-                    experimentObject.variations shouldBe variationsClass.enumConstants
+                    val experimentObject = experimentClass.getField("INSTANCE").get(null)
+                    experimentObject.getFieldValue("key") shouldBe experimentKey
+                    experimentObject.getFieldValue("variations") shouldBe variationsClass.enumConstants
                     val experimentsClientClass =
                         compilationResult.classLoader.loadClass("$packageName.ExperimentsClient")
                     experimentsClientClass.constructors shouldHaveSize 1
@@ -62,3 +57,6 @@ class ExperimentsGeneratorTest : BehaviorSpec({
         }
     }
 })
+
+private fun Any.getFieldValue(fieldName: String): Any =
+    javaClass.getDeclaredField(fieldName).apply { isAccessible = true }.get(this)

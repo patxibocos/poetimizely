@@ -14,7 +14,7 @@ import java.io.StringWriter
  * The functionality to parse features to type safe code
  * is designed and documented in https://docs.google.com/document/d/1XJap6OKnzAM-C4GoL1Ubs2zKRzJSlIdzcvddOOE2Z7Q.
  */
-class FeaturesGenerator(private val packageName: String = "") {
+class FeaturesGenerator(private val packageName: String) {
     fun generate(features: List<Feature>): String =
         FileSpec.builder(packageName, "Features")
             .addType(featuresEnumTypeSpec(features))
