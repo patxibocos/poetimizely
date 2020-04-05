@@ -1,12 +1,14 @@
 package com.patxi.poetimizely.generator
 
 import com.optimizely.ab.Optimizely
+import com.patxi.poetimizely.matchers.publicStaticMethod
 import com.patxi.poetimizely.optimizely.Feature
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldHave
 
 class FeaturesGeneratorTest : BehaviorSpec({
 
@@ -38,17 +40,15 @@ class FeaturesGeneratorTest : BehaviorSpec({
                             "NEW_SIGN_UP_PAGE"
                         )
                     }
-                    val featuresClientClass =
-                        compilationResult.classLoader.loadClass("$packageName.FeaturesClient")
-                    with(featuresClientClass.constructors.first().parameters) {
-                        this shouldHaveSize 2
-                        this[0].type shouldBe Optimizely::class.java
-                        this[1].type shouldBe String::class.java
-                    }
-                    with(featuresClientClass.methods.first()) {
-                        this.name shouldBe "isFeatureEnabled"
-                        this.parameters.first().type shouldBe featuresEnum
-                    }
+                    val extensionFunctionContainerClass =
+                        compilationResult.classLoader.loadClass("$packageName.FeaturesKt")
+                    extensionFunctionContainerClass shouldHave publicStaticMethod(
+                        "isFeatureEnabled",
+                        Optimizely::class.java,
+                        featuresEnum,
+                        String::class.java,
+                        Map::class.java
+                    )
                 }
             }
         }

@@ -26,13 +26,14 @@ class ExperimentsGenerator(private val packageName: String) {
             .apply {
                 addType(baseVariationTypeSpec())
                 addType(baseExperimentTypeSpec())
+                addFunction(getAllExperimentsFunSpec(optimizelyExperiments))
+                addFunction(getVariationForExperimentFunSpec())
                 optimizelyExperiments.forEach { experiment ->
                     val variationsEnumClassName =
                         ClassName(packageName, experiment.key.optimizelyExperimentKeyToVariationEnumName())
                     addType(experimentVariationsEnumTypeSpec(variationsEnumClassName, experiment.variations))
                     addType(experimentObjectTypeSpec(variationsEnumClassName, experiment))
                 }
-                addType(buildExperimentsClient(optimizelyExperiments))
             }.build().run {
                 StringWriter().also { appendable: Appendable ->
                     this.writeTo(appendable)
@@ -89,59 +90,42 @@ class ExperimentsGenerator(private val packageName: String) {
                 )
             }.build()
 
-    private fun buildExperimentsClient(optimizelyExperiments: List<OptimizelyExperiment>): TypeSpec =
-        TypeSpec.classBuilder(ClassName(packageName, "ExperimentsClient"))
-            .primaryConstructor(
-                FunSpec.constructorBuilder()
-                    .addParameter("optimizely", Optimizely::class)
-                    .addParameter("userId", String::class)
-                    .build()
+    // This function builds the following:
+    // fun getAllExperiments(): List<BaseExperiment<out BaseVariation>> = listOf(...)
+    private fun getAllExperimentsFunSpec(optimizelyExperiments: List<OptimizelyExperiment>): FunSpec =
+        FunSpec.builder("getAllExperiments")
+            .receiver(Optimizely::class)
+            .returns(
+                ClassName("kotlin.collections", "List").parameterizedBy(
+                    baseExperimentClassName.parameterizedBy(WildcardTypeName.producerOf(baseVariationClassName))
+                )
             )
-            .addProperty(
-                PropertySpec.builder("optimizely", Optimizely::class, KModifier.PRIVATE)
-                    .initializer("optimizely")
-                    .build()
-            )
-            .addProperty(
-                PropertySpec.builder("userId", String::class, KModifier.PRIVATE)
-                    .initializer("userId")
-                    .build()
-            )
-            // This function builds the following:
-            // fun getAllExperiments(): List<BaseExperiment<out BaseVariation>> = listOf(...)
-            .addFunction(
-                FunSpec.builder("getAllExperiments")
-                    .returns(
-                        ClassName("kotlin.collections", "List").parameterizedBy(
-                            baseExperimentClassName.parameterizedBy(WildcardTypeName.producerOf(baseVariationClassName))
-                        )
-                    )
-                    .addStatement("""return listOf(${optimizelyExperiments.joinToString {
-                        it.key.optimizelyExperimentKeyToObjectName()
-                    }})""".trimIndent())
-                    .build()
-            )
-            .addFunction(
-                TypeVariableName("V", baseVariationClassName).let { variationTypeName ->
-                    FunSpec.builder("getVariationForExperiment")
-                        .addTypeVariable(variationTypeName)
-                        .returns(variationTypeName.copy(nullable = true))
-                        .addParameter(
-                            "experiment",
-                            baseExperimentClassName.parameterizedBy(WildcardTypeName.producerOf(variationTypeName))
-                        )
-                        .addParameter(
-                            ParameterSpec.Companion.builder(
-                                "attributes",
-                                Map::class.parameterizedBy(String::class, Any::class)
-                            ).defaultValue(CodeBlock.of("emptyMap()")).build()
-                        )
-                        .addStatement("val variation = optimizely.activate(experiment.key, userId, attributes)")
-                        .addStatement("return experiment.variations.find { it.key == variation?.key }")
-                        .build()
-                }
-            )
+            .addStatement("""return listOf(${optimizelyExperiments.joinToString {
+                it.key.optimizelyExperimentKeyToObjectName()
+            }})""".trimIndent())
             .build()
+
+    private fun getVariationForExperimentFunSpec(): FunSpec =
+        TypeVariableName("V", baseVariationClassName).let { variationTypeName ->
+            FunSpec.builder("getVariationForExperiment")
+                .receiver(Optimizely::class)
+                .addTypeVariable(variationTypeName)
+                .addParameter(
+                    "experiment",
+                    baseExperimentClassName.parameterizedBy(WildcardTypeName.producerOf(variationTypeName))
+                )
+                .addParameter("userId", String::class)
+                .addParameter(
+                    ParameterSpec.Companion.builder(
+                        "attributes",
+                        Map::class.parameterizedBy(String::class, Any::class)
+                    ).defaultValue(CodeBlock.of("emptyMap()")).build()
+                )
+                .returns(variationTypeName.copy(nullable = true))
+                .addStatement("val variation = this.activate(experiment.key, userId, attributes)")
+                .addStatement("return experiment.variations.find { it.key == variation?.key }")
+                .build()
+        }
 }
 
 private fun String.optimizelyExperimentKeyToObjectName(): String =
