@@ -1,6 +1,7 @@
 package com.patxi.poetimizely.generator
 
 import com.optimizely.ab.Optimizely
+import com.patxi.poetimizely.matchers.publicStaticMethod
 import com.patxi.poetimizely.optimizely.OptimizelyExperiment
 import com.patxi.poetimizely.optimizely.OptimizelyVariation
 import com.tschuchort.compiletesting.KotlinCompilation
@@ -9,8 +10,9 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.shouldHave
 import io.kotest.matchers.types.shouldBeInstanceOf
+import io.mockk.mockk
 
 class ExperimentsGeneratorTest : BehaviorSpec({
 
@@ -30,28 +32,37 @@ class ExperimentsGeneratorTest : BehaviorSpec({
                     messageOutputStream = System.out
                 }.compile()
                 then("Generated code compiles") {
+                    fun loadClass(className: String): Class<*> =
+                        compilationResult.classLoader.loadClass("$packageName.$className")
+
                     compilationResult.exitCode shouldBe KotlinCompilation.ExitCode.OK
-                    val variationsClass =
-                        compilationResult.classLoader.loadClass("$packageName.TestExperimentVariations")
+                    // Variations enum
+                    val variationsClass = loadClass("TestExperimentVariations")
                     with(variationsClass.enumConstants) {
                         this shouldHaveSize optimizelyExperiment.variations.size
                         this.shouldBeInstanceOf<Array<Any>>()
                         this.map { it.getFieldValue("key") as String } shouldContainExactlyInAnyOrder optimizelyExperiment.variations.map { it.key }
                     }
-                    val experimentClass = compilationResult.classLoader.loadClass("$packageName.TestExperiment")
+                    // Experiment object
+                    val experimentClass = loadClass("TestExperiment")
                     val experimentObject = experimentClass.getField("INSTANCE").get(null)
                     experimentObject.getFieldValue("key") shouldBe experimentKey
                     experimentObject.getFieldValue("variations") shouldBe variationsClass.enumConstants
-                    val experimentsClientClass =
-                        compilationResult.classLoader.loadClass("$packageName.ExperimentsClient")
-                    experimentsClientClass.constructors shouldHaveSize 1
-                    with(experimentsClientClass.constructors.first().parameters) {
-                        this shouldHaveSize 2
-                        this[0].type shouldBe Optimizely::class.java
-                        this[1].type shouldBe String::class.java
+                    // Optimizely extension functions
+                    val baseExperimentClass = loadClass("BaseExperiment")
+                    val extensionFunctionContainerClass = loadClass("ExperimentsKt")
+                    with(extensionFunctionContainerClass) {
+                        this shouldHave publicStaticMethod("getAllExperiments", Optimizely::class.java)
+                        this.getMethod("getAllExperiments", Optimizely::class.java)
+                            .invoke(null, mockk<Optimizely>()) shouldBe listOf(experimentObject)
+                        this shouldHave publicStaticMethod(
+                            "getVariationForExperiment",
+                            Optimizely::class.java,
+                            baseExperimentClass,
+                            String::class.java,
+                            Map::class.java
+                        )
                     }
-                    experimentsClientClass.methods.find { it.name == "getAllExperiments" } shouldNotBe null
-                    experimentsClientClass.methods.find { it.name == "getVariationForExperiment" } shouldNotBe null
                 }
             }
         }
