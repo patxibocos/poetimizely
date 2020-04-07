@@ -44,7 +44,7 @@ class ExperimentsGeneratorTest : BehaviorSpec({
                         this.map { it.getFieldValue("key") as String } shouldContainExactlyInAnyOrder optimizelyExperiment.variations.map { it.key }
                     }
                     // Experiment object
-                    val experimentClass = loadClass("TestExperiment")
+                    val experimentClass = loadClass("Experiments\$TestExperiment")
                     val experimentObject = experimentClass.getField("INSTANCE").get(null)
                     experimentObject.getFieldValue("key") shouldBe experimentKey
                     experimentObject.getFieldValue("variations") shouldBe variationsClass.enumConstants
