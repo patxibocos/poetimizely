@@ -28,12 +28,14 @@ class ExperimentsGenerator(private val packageName: String) {
                 addType(baseExperimentTypeSpec())
                 addFunction(getAllExperimentsFunSpec(optimizelyExperiments))
                 addFunction(getVariationForExperimentFunSpec())
+                val experimentsObjectBuilder = TypeSpec.objectBuilder("Experiments")
                 optimizelyExperiments.forEach { experiment ->
                     val variationsEnumClassName =
                         ClassName(packageName, experiment.key.optimizelyExperimentKeyToVariationEnumName())
                     addType(experimentVariationsEnumTypeSpec(variationsEnumClassName, experiment.variations))
-                    addType(experimentObjectTypeSpec(variationsEnumClassName, experiment))
+                    experimentsObjectBuilder.addType(experimentObjectTypeSpec(variationsEnumClassName, experiment))
                 }
+                addType(experimentsObjectBuilder.build())
             }.build().run {
                 StringWriter().also { appendable: Appendable ->
                     this.writeTo(appendable)
@@ -101,7 +103,7 @@ class ExperimentsGenerator(private val packageName: String) {
                 )
             )
             .addStatement("""return listOf(${optimizelyExperiments.joinToString {
-                it.key.optimizelyExperimentKeyToObjectName()
+                "Experiments.${it.key.optimizelyExperimentKeyToObjectName()}"
             }})""".trimIndent())
             .build()
 

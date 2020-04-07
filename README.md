@@ -97,7 +97,8 @@ interface BaseExperiment<V : BaseVariation> {
     val variations: Array<V>
 }
 
-fun Optimizely.getAllExperiments(): List<BaseExperiment<out BaseVariation>> = listOf(ExampleExperiment)
+fun Optimizely.getAllExperiments(): List<BaseExperiment<out BaseVariation>> = 
+    listOf(Experiments.ExampleExperiment)
 
 fun <V : BaseVariation> Optimizely.getVariationForExperiment(
     experiment: BaseExperiment<out V>,
@@ -114,10 +115,12 @@ enum class ExampleExperimentVariations : BaseVariation {
     }
 }
 
-object ExampleExperiment : BaseExperiment<ExampleExperimentVariations> {
-    override val key: String = "example-experiment"
-    override val variations: Array<ExampleExperimentVariations> =
-        ExampleExperimentVariations.values()
+object Experiments {
+    object ExampleExperiment : BaseExperiment<ExampleExperimentVariations> {
+        override val key: String = "example-experiment"
+        override val variations: Array<ExampleExperimentVariations> =
+            ExampleExperimentVariations.values()
+    }
 }
 ```
 
@@ -134,5 +137,5 @@ fun Optimizely.isFeatureEnabled(
     feature: Features,
     userId: String,
     attributes: Map<String, Any> = emptyMap()
-): Boolean = optimizely.isFeatureEnabled(feature.key, userId, attributes)
+): Boolean = this.isFeatureEnabled(feature.key, userId, attributes)
 ```
