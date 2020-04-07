@@ -20,7 +20,7 @@ There are just a few lines you need to add to your build Gradle file to use this
 
 ```kotlin
 plugins {
-  id("com.patxi.poetimizely") version "1.0.0-alpha02"
+  id("com.patxi.poetimizely") version "1.0.0-beta01"
 }
 
 poetimizely {
@@ -34,7 +34,7 @@ poetimizely {
 
 ```groovy
 plugins {
-  id "com.patxi.poetimizely" version "1.0.0-alpha02"
+  id "com.patxi.poetimizely" version "1.0.0-beta01"
 }
 
 poetimizely {
