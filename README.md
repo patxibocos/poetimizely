@@ -62,7 +62,7 @@ For each of the experiments, a new [object](https://kotlinlang.org/docs/referenc
 An extension function for the Optimizely class is also available that brings the **type safety**:
 
 ```kotlin
-when (optimizely.getVariationForExperiment(ExampleExperiment, userId)) {
+when (optimizely.getVariationForExperiment(Experiments.ExampleExperiment, userId)) {
     EXAMPLE_VARIATION -> TODO() 
     null -> TODO()
 }
