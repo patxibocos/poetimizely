@@ -15,12 +15,18 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
+    - name: Set LOCAL_MAVEN_URL environment variable
+      run: echo ::set-env name=LOCAL_MAVEN_URL::$(echo $GITHUB_WORKSPACE/repository)
+
+    - name: Build publish core in local Maven repository
+      run: ./core/gradlew -p=core publish
+
     # Publish the plugin to Gradle Plugin Portal (key and secret are stored as secrets in the repo)
     - name: Publish the plugin in Gradle Plugin Portal
-      run: ./gradlew publishPlugins -Pgradle.publish.key=${{ secrets.GRADLE_PUBLISH_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_PUBLISH_SECRET }}
+      run: ./gradle-plugin/gradlew -p=gradle-plugin publishPlugins -Pgradle.publish.key=${{ secrets.GRADLE_PUBLISH_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_PUBLISH_SECRET }}
 
     - name: Set plugin version in an environment variable
-      run: echo ::set-env name=PLUGIN_VERSION::$(./gradlew properties --no-daemon --console=plain -q | grep "^version:" | awk '{printf $2}')
+      run: echo ::set-env name=PLUGIN_VERSION::$(cat poetimizely.properties | grep "version" | cut -d'=' -f2-)
 
     - name: Create and push the Git tag
       run: git tag $PLUGIN_VERSION && git push origin $PLUGIN_VERSION
