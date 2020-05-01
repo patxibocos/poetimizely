@@ -18,17 +18,17 @@ jobs:
     - name: Set LOCAL_MAVEN_URL environment variable
       run: echo ::set-env name=LOCAL_MAVEN_URL::$(echo $GITHUB_WORKSPACE/repository)
 
-    - name: Build publish core in local Maven repository
-      run: ./core/gradlew -p=core publish
+    - name: Build and publish generator in local Maven repository
+      run: ./generator/gradlew -p=generator publish
 
-    - name: Test core
-      run: ./core/gradlew -p=core test
+    - name: Test generator
+      run: ./generator/gradlew -p=generator test
 
     - name: Test gradle-plugin
       run: ./gradle-plugin/gradlew -p=gradle-plugin test
 
-    - name: Ktlint core
-      run: ./core/gradlew -p=core ktlint
+    - name: Ktlint generator
+      run: ./generator/gradlew -p=generator ktlint
 
     - name: Ktlint gradle-plugin
       run: ./gradle-plugin/gradlew -p=gradle-plugin ktlint

@@ -18,8 +18,8 @@ jobs:
     - name: Set LOCAL_MAVEN_URL environment variable
       run: echo ::set-env name=LOCAL_MAVEN_URL::$(echo $GITHUB_WORKSPACE/repository)
 
-    - name: Build publish core in local Maven repository
-      run: ./core/gradlew -p=core publish
+    - name: Build and publish generator in local Maven repository
+      run: ./generator/gradlew -p=generator publish
 
     # Publish the plugin to Gradle Plugin Portal (key and secret are stored as secrets in the repo)
     - name: Publish the plugin in Gradle Plugin Portal

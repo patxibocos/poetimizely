@@ -22,7 +22,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
 
-    implementation("com.patxi:poetimizely-core:1.0.0")
+    implementation("com.patxi:poetimizely-generator:1.0.0")
     implementation("com.optimizely.ab:core-api:3.4.1")
     implementation("com.squareup:kotlinpoet:1.5.0")
     implementation("com.squareup.retrofit2:retrofit:2.7.2")
