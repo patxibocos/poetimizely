@@ -1,4 +1,4 @@
-package com.patxi.poetimizely.plugin
+package com.patxi.poetimizely.gradle.plugin
 
 open class PoetimizelyExtension(
     var optimizelyProjectId: Long? = null,

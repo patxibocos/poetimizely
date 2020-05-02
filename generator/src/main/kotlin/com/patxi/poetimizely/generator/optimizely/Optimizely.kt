@@ -1,16 +1,16 @@
-package com.patxi.poetimizely.optimizely
+package com.patxi.poetimizely.generator.optimizely
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-fun buildExperimentsService(retrofit: Retrofit): ExperimentsService =
+internal fun buildExperimentsService(retrofit: Retrofit): ExperimentsService =
     retrofit.create(ExperimentsService::class.java)
 
-fun buildFeaturesService(retrofit: Retrofit): FeaturesService =
+internal fun buildFeaturesService(retrofit: Retrofit): FeaturesService =
     retrofit.create(FeaturesService::class.java)
 
-fun authenticatedRetrofit(optimizelyToken: String): Retrofit {
+internal fun authenticatedRetrofit(optimizelyToken: String): Retrofit {
     val httpClient = OkHttpClient.Builder().addInterceptor { chain ->
         val newRequest = chain.request().newBuilder().addHeader("Authorization", "Bearer $optimizelyToken").build()
         chain.proceed(newRequest)
