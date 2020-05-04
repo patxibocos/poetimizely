@@ -22,16 +22,28 @@ jobs:
       run: ./generator/gradlew -p=generator publish
 
     - name: Test generator
-      run: ./generator/gradlew -p=generator test
+      run: ./gradlew test
+      working-directory: ./generator
 
     - name: Test gradle-plugin
-      run: ./gradle-plugin/gradlew -p=gradle-plugin test
+      run: ./gradlew test
+      working-directory: ./gradle-plugin
+
+    - name: Test maven-plugin
+      run: ./mvnw test
+      working-directory: ./maven-plugin
 
     - name: Ktlint generator
-      run: ./generator/gradlew -p=generator ktlint
+      run: ./gradlew ktlint
+      working-directory: ./generator
 
     - name: Ktlint gradle-plugin
-      run: ./gradle-plugin/gradlew -p=gradle-plugin ktlint
+      run: ./gradlew ktlint
+      working-directory: ./gradle-plugin
+
+    - name: Ktlint maven-plugin
+      run: ./mvnw.cmd ktlint:check
+      working-directory: ./maven-plugin
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
