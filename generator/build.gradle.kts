@@ -61,8 +61,6 @@ publishing {
         }
     }
     repositories {
-        maven {
-            url = uri(System.getenv("LOCAL_MAVEN_URL"))
-        }
+        mavenLocal()
     }
 }

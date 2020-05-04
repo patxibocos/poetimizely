@@ -68,11 +68,6 @@
 
     <repositories>
         <repository>
-            <id>local-maven-repository</id>
-            <name>local maven repository to grab the generator</name>
-            <url>file:${env.LOCAL_MAVEN_URL}</url>
-        </repository>
-        <repository>
             <id>jcenter</id>
             <name>jcenter</name>
             <url>https://jcenter.bintray.com</url>
