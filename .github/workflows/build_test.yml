@@ -1,6 +1,5 @@
 name: CI
 
-# Triggers for every PR and when pushed to master
 on:
   push:
     branches: [ master ]
@@ -12,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
     - name: Set up JDK 1.8
