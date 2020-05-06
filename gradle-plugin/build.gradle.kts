@@ -58,7 +58,7 @@ gradlePlugin {
             id = "com.patxi.poetimizely"
             displayName = "poetimizely"
             description = "Generate Kotlin type safe accessors for Optimizely experiments and features"
-            implementationClass = "com.patxi.poetimizely.plugin.PoetimizelyPlugin"
+            implementationClass = "com.patxi.poetimizely.gradle.plugin.PoetimizelyPlugin"
         }
     }
 }

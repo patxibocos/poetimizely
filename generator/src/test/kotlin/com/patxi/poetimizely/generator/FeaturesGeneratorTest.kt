@@ -2,7 +2,7 @@ package com.patxi.poetimizely.generator
 
 import com.optimizely.ab.Optimizely
 import com.patxi.poetimizely.matchers.publicStaticMethod
-import com.patxi.poetimizely.optimizely.Feature
+import com.patxi.poetimizely.generator.optimizely.Feature
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import io.kotest.core.spec.style.BehaviorSpec
@@ -18,11 +18,10 @@ class FeaturesGeneratorTest : BehaviorSpec({
             Feature("new_login_page"),
             Feature("new_sign_up_page")
         )
-        and("A FeaturesGenerator for a package") {
+        and("A package name") {
             val packageName = "what.ever.pack.age"
-            val featuresGenerator = FeaturesGenerator(packageName)
             `when`("Compiling the generated code for features") {
-                val featuresCode = featuresGenerator.generate(features)
+                val featuresCode = generateFeaturesCode(features, packageName)
                 val compilationResult = KotlinCompilation().apply {
                     sources = listOf(SourceFile.kotlin("Features.kt", featuresCode))
                     inheritClassPath = true

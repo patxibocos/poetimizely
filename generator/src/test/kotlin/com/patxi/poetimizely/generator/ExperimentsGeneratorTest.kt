@@ -2,8 +2,8 @@ package com.patxi.poetimizely.generator
 
 import com.optimizely.ab.Optimizely
 import com.patxi.poetimizely.matchers.publicStaticMethod
-import com.patxi.poetimizely.optimizely.OptimizelyExperiment
-import com.patxi.poetimizely.optimizely.OptimizelyVariation
+import com.patxi.poetimizely.generator.optimizely.OptimizelyExperiment
+import com.patxi.poetimizely.generator.optimizely.OptimizelyVariation
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import io.kotest.core.spec.style.BehaviorSpec
@@ -21,11 +21,10 @@ class ExperimentsGeneratorTest : BehaviorSpec({
         val variationKey = "TEST-VARIATION"
         val optimizelyExperiment =
             OptimizelyExperiment(experimentKey, variations = listOf(OptimizelyVariation(variationKey)))
-        and("A Generator for a package") {
+        and("A package name") {
             val packageName = "what.ever.pack.age"
-            val experimentsGenerator = ExperimentsGenerator(packageName)
             `when`("Compiling the generated code for experiment and its variations") {
-                val experimentsCode = experimentsGenerator.generate(listOf(optimizelyExperiment))
+                val experimentsCode = generateExperimentsCode(listOf(optimizelyExperiment), packageName)
                 val compilationResult = KotlinCompilation().apply {
                     sources = listOf(SourceFile.kotlin("Experiments.kt", experimentsCode))
                     inheritClassPath = true
