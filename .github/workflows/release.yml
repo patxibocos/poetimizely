@@ -1,6 +1,5 @@
 name: release
 
-# Triggers when a new release is created
 on:
   push:
     branches: [ master ]
@@ -12,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
     - name: Set LOCAL_MAVEN_URL environment variable

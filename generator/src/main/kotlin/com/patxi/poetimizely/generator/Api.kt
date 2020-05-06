@@ -1,3 +1,5 @@
+@file:JvmName("Api")
+
 package com.patxi.poetimizely.generator
 
 import com.patxi.poetimizely.generator.optimizely.authenticatedRetrofit
