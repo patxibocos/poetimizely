@@ -1,9 +1,9 @@
 package com.patxi.poetimizely.generator
 
 import com.optimizely.ab.Optimizely
-import com.patxi.poetimizely.matchers.publicStaticMethod
 import com.patxi.poetimizely.generator.optimizely.OptimizelyExperiment
 import com.patxi.poetimizely.generator.optimizely.OptimizelyVariation
+import com.patxi.poetimizely.matchers.publicStaticMethod
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import io.kotest.core.spec.style.BehaviorSpec
@@ -43,12 +43,12 @@ class ExperimentsGeneratorTest : BehaviorSpec({
                         this.map { it.getFieldValue("key") as String } shouldContainExactlyInAnyOrder optimizelyExperiment.variations.map { it.key }
                     }
                     // Experiment object
-                    val experimentClass = loadClass("Experiments\$TestExperiment")
-                    val experimentObject = experimentClass.getField("INSTANCE").get(null)
-                    experimentObject.getFieldValue("key") shouldBe experimentKey
-                    experimentObject.getFieldValue("variations") shouldBe variationsClass.enumConstants
+                    val testExperimentClass = loadClass("Experiments\$TestExperiment")
+                    val experimentObject = testExperimentClass.getField("INSTANCE").get(null)
+                    experimentObject.getFieldValueFromParentClass("key") shouldBe experimentKey
+                    experimentObject.getFieldValueFromParentClass("variations") shouldBe variationsClass.enumConstants
                     // Optimizely extension functions
-                    val baseExperimentClass = loadClass("BaseExperiment")
+                    val experimentClass = loadClass("Experiments")
                     val extensionFunctionContainerClass = loadClass("ExperimentsKt")
                     with(extensionFunctionContainerClass) {
                         this shouldHave publicStaticMethod("getAllExperiments", Optimizely::class.java)
@@ -57,7 +57,7 @@ class ExperimentsGeneratorTest : BehaviorSpec({
                         this shouldHave publicStaticMethod(
                             "getVariationForExperiment",
                             Optimizely::class.java,
-                            baseExperimentClass,
+                            experimentClass,
                             String::class.java,
                             Map::class.java
                         )
@@ -70,3 +70,6 @@ class ExperimentsGeneratorTest : BehaviorSpec({
 
 private fun Any.getFieldValue(fieldName: String): Any =
     javaClass.getDeclaredField(fieldName).apply { isAccessible = true }.get(this)
+
+private fun Any.getFieldValueFromParentClass(fieldName: String): Any =
+    javaClass.superclass.getDeclaredField(fieldName).apply { isAccessible = true }.get(this)

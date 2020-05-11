@@ -18,21 +18,21 @@ import java.io.StringWriter
 
 internal fun generateExperimentsCode(optimizelyExperiments: List<OptimizelyExperiment>, packageName: String): String {
     val baseVariationClassName = ClassName(packageName, "BaseVariation")
-    val baseExperimentClassName = ClassName(packageName, "BaseExperiment")
+    val experimentClassName = ClassName(packageName, "Experiments")
 
     return FileSpec.builder(packageName, "Experiments")
         .apply {
+            val experimentSealedClassTypeSpecBuilder =
+                experimentsSealedClassTypeSpec(baseVariationClassName, experimentClassName)
             addType(baseVariationTypeSpec(baseVariationClassName))
-            addType(baseExperimentTypeSpec(baseVariationClassName, baseExperimentClassName))
             addFunction(
                 getAllExperimentsFunSpec(
                     optimizelyExperiments,
-                    baseExperimentClassName,
+                    experimentClassName,
                     baseVariationClassName
                 )
             )
-            addFunction(getVariationForExperimentFunSpec(baseVariationClassName, baseExperimentClassName))
-            val experimentsObjectBuilder = TypeSpec.objectBuilder("Experiments")
+            addFunction(getVariationForExperimentFunSpec(baseVariationClassName, experimentClassName))
             optimizelyExperiments.forEach { experiment ->
                 val variationsEnumClassName =
                     ClassName(packageName, experiment.key.optimizelyExperimentKeyToVariationEnumName())
@@ -43,16 +43,16 @@ internal fun generateExperimentsCode(optimizelyExperiments: List<OptimizelyExper
                         experiment.variations
                     )
                 )
-                experimentsObjectBuilder.addType(
+                experimentSealedClassTypeSpecBuilder.addType(
                     experimentObjectTypeSpec(
                         packageName,
-                        baseExperimentClassName,
+                        experimentClassName,
                         variationsEnumClassName,
                         experiment
                     )
                 )
             }
-            addType(experimentsObjectBuilder.build())
+            addType(experimentSealedClassTypeSpecBuilder.build())
         }.build().run {
             StringWriter().also { appendable: Appendable ->
                 this.writeTo(appendable)
@@ -82,35 +82,40 @@ private fun experimentVariationsEnumTypeSpec(
 private fun baseVariationTypeSpec(baseVariationClassName: ClassName): TypeSpec =
     TypeSpec.interfaceBuilder(baseVariationClassName).addProperty("key", String::class).build()
 
-private fun baseExperimentTypeSpec(baseVariationClassName: ClassName, baseExperimentClassName: ClassName): TypeSpec =
+private fun experimentsSealedClassTypeSpec(
+    baseVariationClassName: ClassName,
+    experimentsClassName: ClassName
+): TypeSpec.Builder =
     TypeVariableName("V", baseVariationClassName)
         .let { variationTypeName ->
-            TypeSpec.interfaceBuilder(baseExperimentClassName).addTypeVariable(variationTypeName)
-                .addProperty("key", String::class)
-                .addProperty("variations", ClassName("kotlin", "Array").parameterizedBy(variationTypeName))
-                .build()
+            TypeSpec.classBuilder(experimentsClassName).addModifiers(KModifier.SEALED)
+                .addTypeVariable(variationTypeName)
+                .primaryConstructor(
+                    FunSpec.constructorBuilder()
+                        .addParameter("key", String::class)
+                        .addParameter("variations", ClassName("kotlin", "Array").parameterizedBy(variationTypeName))
+                        .build()
+                )
+                .addProperty(PropertySpec.builder("key", String::class).initializer("key").build())
+                .addProperty(
+                    PropertySpec.builder(
+                        "variations",
+                        ClassName("kotlin", "Array").parameterizedBy(variationTypeName)
+                    ).initializer("variations").build()
+                )
         }
 
 private fun experimentObjectTypeSpec(
     packageName: String,
-    baseExperimentClassName: ClassName,
+    experimentClassName: ClassName,
     variationsEnumClassName: ClassName,
     optimizelyExperiment: OptimizelyExperiment
 ): TypeSpec =
     TypeSpec.objectBuilder(ClassName(packageName, optimizelyExperiment.key.optimizelyExperimentKeyToObjectName()))
         .apply {
-            val experimentObjectClassName = baseExperimentClassName.parameterizedBy(variationsEnumClassName)
-            addSuperinterface(experimentObjectClassName).addProperty(
-                PropertySpec.builder("key", String::class, KModifier.OVERRIDE)
-                    .initializer("%S", optimizelyExperiment.key)
-                    .build()
-            )
-            val arrayClassName = ClassName("kotlin", "Array")
-            val listOfVariations = arrayClassName.parameterizedBy(variationsEnumClassName)
-            addProperty(
-                PropertySpec.builder("variations", listOfVariations, KModifier.OVERRIDE)
-                    .initializer(CodeBlock.of("$variationsEnumClassName.values()")).build()
-            )
+            superclass(experimentClassName.parameterizedBy(variationsEnumClassName))
+            addSuperclassConstructorParameter("%S", optimizelyExperiment.key)
+            addSuperclassConstructorParameter(CodeBlock.of("$variationsEnumClassName.values()"))
         }.build()
 
 // This function builds the following:

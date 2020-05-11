@@ -91,17 +91,11 @@ interface BaseVariation {
     val key: String
 }
 
-interface BaseExperiment<V : BaseVariation> {
-    val key: String
-
-    val variations: Array<V>
-}
-
-fun Optimizely.getAllExperiments(): List<BaseExperiment<out BaseVariation>> = 
+fun Optimizely.getAllExperiments(): List<Experiments<out BaseVariation>> =
     listOf(Experiments.ExampleExperiment)
 
 fun <V : BaseVariation> Optimizely.getVariationForExperiment(
-    experiment: BaseExperiment<out V>,
+    experiment: Experiments<out V>,
     userId: String,
     attributes: Map<String, Any> = emptyMap()
 ): V? {
@@ -115,12 +109,14 @@ enum class ExampleExperimentVariations : BaseVariation {
     }
 }
 
-object Experiments {
-    object ExampleExperiment : BaseExperiment<ExampleExperimentVariations> {
-        override val key: String = "example-experiment"
-        override val variations: Array<ExampleExperimentVariations> =
-            ExampleExperimentVariations.values()
-    }
+sealed class Experiments<V : BaseVariation>(
+    val key: String,
+    val variations: Array<V>
+) {
+    object ExampleExperiment : Experiments<ExampleExperimentVariations> (
+        "example-experiment",
+        ExampleExperimentVariations.values()
+    )
 }
 ```
 
