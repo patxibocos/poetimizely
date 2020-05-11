@@ -4,8 +4,8 @@
 
 ## What is poetimizely ❓
 
-**poetimizely** is a library to generate type safe accessors for [Optimizely](https://www.optimizely.com/) experiments.
-Given a Project ID and a token it will generate classes for all the experiments and their variations.
+**poetimizely** is a library to generate type safe accessors for [Optimizely](https://www.optimizely.com/) experiments and features.
+Given a Project ID and a token it will generate classes for every experiment + variations and features + variables.
 
 ## Gradle setup ⚙
 
@@ -123,10 +123,17 @@ sealed class Experiments<V : BaseVariation>(
 #### `Features.kt`
 
 ```kotlin
-enum class Features(
+class FeatureVariable<T>(
+    val featureKey: String,
+    val variableKey: String
+)
+
+sealed class Features(
     val key: String
 ) {
-    EXAMPLE_FEATURE("example-feature") // Your features will be here 
+    object ExampleFeature("example-feature") {
+        val exampleVariable: FeatureVariable<Boolean> = FeatureVariable("example-feature", "example-variable")
+    } 
 }
 
 fun Optimizely.isFeatureEnabled(
@@ -134,4 +141,32 @@ fun Optimizely.isFeatureEnabled(
     userId: String,
     attributes: Map<String, Any> = emptyMap()
 ): Boolean = this.isFeatureEnabled(feature.key, userId, attributes)
+
+fun Optimizely.getFeatureVariable(
+    variable: FeatureVariable<Boolean>,
+    userId: String,
+    attributes: Map<String, Any> = emptyMap()
+): Boolean? =
+    this.getFeatureVariableBoolean(variable.featureKey, variable.variableKey, userId, attributes)
+
+fun Optimizely.getFeatureVariable(
+    variable: FeatureVariable<String>,
+    userId: String,
+    attributes: Map<String, Any> = emptyMap()
+): String? =
+    this.getFeatureVariableString(variable.featureKey, variable.variableKey, userId, attributes)
+
+fun Optimizely.getFeatureVariable(
+    variable: FeatureVariable<Double>,
+    userId: String,
+    attributes: Map<String, Any> = emptyMap()
+): Double? =
+    this.getFeatureVariableDouble(variable.featureKey, variable.variableKey, userId, attributes)
+
+fun Optimizely.getFeatureVariable(
+    variable: FeatureVariable<Int>,
+    userId: String,
+    attributes: Map<String, Any> = emptyMap()
+): Int? =
+    this.getFeatureVariableInteger(variable.featureKey, variable.variableKey, userId, attributes)
 ```
