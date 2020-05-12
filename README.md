@@ -70,14 +70,23 @@ when (optimizely.getVariationForExperiment(Experiments.ExampleExperiment, userId
 
 ### Features 💡
 
-Features is more simple, all of them are contained in a single enum class.
+Kotlin objects will also be generated for features. For the set of variables that each of the features may have, a property is added to the object.
 
-Another extension function is provided to query if a features is enabled:
+To check whether a feature is enabled an extension function is provided:
 
 ```kotlin
-if (optimizely.isFeatureEnabled(Features.EXAMPLE_FEATURE, userId)) {
+if (optimizely.isFeatureEnabled(Features.ExampleFeature, userId)) {
     TODO()
 }
+```
+
+and also for getting feature variables values:
+
+```kotlin
+val booleanVariable: Boolean? = optimizely.getFeatureVariable(Features.ExampleFeature.exampleBooleanVariable)
+val stringVariable: String? = optimizely.getFeatureVariable(Features.ExampleFeature.exampleStringVariable)
+val doubleVariable: Double? = optimizely.getFeatureVariable(Features.ExampleFeature.exampleDoubleVariable)
+val intVariable: Int? = optimizely.getFeatureVariable(Features.ExampleFeature.exampleIntVariable)
 ```
 
 ## A look at the generated code 👀
