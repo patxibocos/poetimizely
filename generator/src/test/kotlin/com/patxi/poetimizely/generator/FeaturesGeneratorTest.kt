@@ -3,12 +3,16 @@ package com.patxi.poetimizely.generator
 import com.optimizely.ab.Optimizely
 import com.patxi.poetimizely.generator.optimizely.Feature
 import com.patxi.poetimizely.generator.optimizely.Variable
+import com.patxi.poetimizely.matchers.parentClassShouldHaveFieldWithValue
 import com.patxi.poetimizely.matchers.publicStaticMethod
 import com.patxi.poetimizely.matchers.shouldBeKotlinObject
 import com.patxi.poetimizely.matchers.shouldHaveField
+import com.patxi.poetimizely.matchers.shouldHaveFieldWithValue
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.data.forAll
+import io.kotest.data.row
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldHave
 
@@ -34,36 +38,23 @@ class FeaturesGeneratorTest : BehaviorSpec({
                     compilationResult.exitCode shouldBe KotlinCompilation.ExitCode.OK
                 }
                 then("Kotlin objects for features and variables exist with their properties") {
-                    compilationResult.classLoader.loadClass("$packageName.Features\$NewCheckoutPage") shouldBeKotlinObject { feature ->
-                        feature.getFieldValueFromParentClass("key") shouldBe "new_checkout_page"
-                        feature.shouldHaveField("variableKey1") { featureVariable ->
-                            featureVariable.getFieldValue("featureKey") shouldBe "new_checkout_page"
-                            featureVariable.getFieldValue("variableKey") shouldBe "variable_key_1"
-                        }
-                    }
-                    compilationResult.classLoader.loadClass("$packageName.Features\$NewLoginPage") shouldBeKotlinObject { feature ->
-                        feature.getFieldValueFromParentClass("key") shouldBe "new_login_page"
-                        feature.shouldHaveField("variableKey2") { featureVariable ->
-                            featureVariable.getFieldValue("featureKey") shouldBe "new_login_page"
-                            featureVariable.getFieldValue("variableKey") shouldBe "variable_key_2"
-                        }
-                    }
-                    compilationResult.classLoader.loadClass("$packageName.Features\$NewSignUpPage") shouldBeKotlinObject { feature ->
-                        feature.getFieldValueFromParentClass("key") shouldBe "new_sign_up_page"
-                        feature.shouldHaveField("variableKey3") { featureVariable ->
-                            featureVariable.getFieldValue("featureKey") shouldBe "new_sign_up_page"
-                            featureVariable.getFieldValue("variableKey") shouldBe "variable_key_3"
-                        }
-                    }
-                    compilationResult.classLoader.loadClass("$packageName.Features\$NewOnboardingPage") shouldBeKotlinObject { feature ->
-                        feature.getFieldValueFromParentClass("key") shouldBe "new_onboarding_page"
-                        feature.shouldHaveField("variableKey4") { featureVariable ->
-                            featureVariable.getFieldValue("featureKey") shouldBe "new_onboarding_page"
-                            featureVariable.getFieldValue("variableKey") shouldBe "variable_key_4"
+                    forAll(
+                        row("new_checkout_page", "NewCheckoutPage", "variable_key_1", "variableKey1"),
+                        row("new_login_page", "NewLoginPage", "variable_key_2", "variableKey2"),
+                        row("new_sign_up_page", "NewSignUpPage", "variable_key_3", "variableKey3"),
+                        row("new_onboarding_page", "NewOnboardingPage", "variable_key_4", "variableKey4")
+                    ) { featureKey, generatedFeatureClassName, variableKey, generatedFeatureVariableName ->
+                        val feature =
+                            compilationResult.classLoader.loadClass("$packageName.Features\$$generatedFeatureClassName")
+                                .shouldBeKotlinObject()
+                        feature.parentClassShouldHaveFieldWithValue("key", featureKey)
+                        feature.shouldHaveField(generatedFeatureVariableName) { featureVariable ->
+                            featureVariable.shouldHaveFieldWithValue("featureKey", featureKey)
+                            featureVariable.shouldHaveFieldWithValue("variableKey", variableKey)
                         }
                     }
                 }
-                then("Extension functions haven been created") {
+                then("Optimizely extension functions for features and variables have been created") {
                     val featureClass = compilationResult.classLoader.loadClass("$packageName.Features")
                     val extensionFunctionContainerClass =
                         compilationResult.classLoader.loadClass("$packageName.FeaturesKt")
@@ -75,46 +66,23 @@ class FeaturesGeneratorTest : BehaviorSpec({
                         Map::class.java
                     )
                     val featureVariableClass = compilationResult.classLoader.loadClass("$packageName.FeatureVariable")
-                    extensionFunctionContainerClass shouldHave publicStaticMethod(
-                        "getFeatureVariable",
-                        Optimizely::class.java,
-                        featureVariableClass,
+                    listOf(
+                        Boolean::class.javaObjectType,
                         String::class.java,
-                        Map::class.java,
-                        returnType = Boolean::class.javaObjectType
-                    )
-                    extensionFunctionContainerClass shouldHave publicStaticMethod(
-                        "getFeatureVariable",
-                        Optimizely::class.java,
-                        featureVariableClass,
-                        String::class.java,
-                        Map::class.java,
-                        returnType = String::class.java
-                    )
-                    extensionFunctionContainerClass shouldHave publicStaticMethod(
-                        "getFeatureVariable",
-                        Optimizely::class.java,
-                        featureVariableClass,
-                        String::class.java,
-                        Map::class.java,
-                        returnType = Double::class.javaObjectType
-                    )
-                    extensionFunctionContainerClass shouldHave publicStaticMethod(
-                        "getFeatureVariable",
-                        Optimizely::class.java,
-                        featureVariableClass,
-                        String::class.java,
-                        Map::class.java,
-                        returnType = Int::class.javaObjectType
-                    )
+                        Double::class.javaObjectType,
+                        Int::class.javaObjectType
+                    ).forEach { returnTypeClass ->
+                        extensionFunctionContainerClass shouldHave publicStaticMethod(
+                            "getFeatureVariable",
+                            Optimizely::class.java,
+                            featureVariableClass,
+                            String::class.java,
+                            Map::class.java,
+                            returnType = returnTypeClass
+                        )
+                    }
                 }
             }
         }
     }
 })
-
-private fun Any.getFieldValue(fieldName: String): Any =
-    javaClass.getDeclaredField(fieldName).apply { isAccessible = true }.get(this)
-
-private fun Any.getFieldValueFromParentClass(fieldName: String): Any =
-    javaClass.superclass.getDeclaredField(fieldName).apply { isAccessible = true }.get(this)

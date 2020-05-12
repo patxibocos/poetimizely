@@ -6,7 +6,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldHave
 import java.lang.reflect.Modifier
 
-fun publicStaticMethod(methodName: String, vararg parameterTypes: Class<*>, returnType: Class<*>? = null) =
+internal fun publicStaticMethod(methodName: String, vararg parameterTypes: Class<*>, returnType: Class<*>? = null) =
     object : Matcher<Class<*>> {
         override fun test(value: Class<*>) =
             MatcherResult(
@@ -39,16 +39,16 @@ private fun kotlinObject() = object : Matcher<Class<*>> {
         )
 }
 
-infix fun Class<*>.shouldBeKotlinObject(callback: (Any) -> Unit) {
+internal fun Class<*>.shouldBeKotlinObject(): Any {
     this shouldBe kotlinObject()
-    callback(this.getField("INSTANCE").get(null))
+    return this.getField("INSTANCE").get(null)
 }
 
-private fun field(clazz: Class<Any>, fieldName: String) = object : Matcher<Any> {
+private fun field(clazz: Class<in Any>, fieldName: String, targetObject: Any) = object : Matcher<Any> {
     override fun test(value: Any): MatcherResult =
         MatcherResult(
             try {
-                clazz.getDeclaredField(fieldName).apply { isAccessible = true }.get(this)
+                clazz.readField(fieldName, targetObject)
                 true
             } catch (e: Exception) {
                 false
@@ -58,7 +58,20 @@ private fun field(clazz: Class<Any>, fieldName: String) = object : Matcher<Any> 
         )
 }
 
-fun Any.shouldHaveField(fieldName: String, callback: (Any) -> Unit = {}) {
-    this shouldHave field(javaClass, fieldName)
-    callback(javaClass.getDeclaredField(fieldName).apply { isAccessible = true }.get(this))
+private fun Class<*>.readField(fieldName: String, targetObject: Any) =
+    getDeclaredField(fieldName).apply { isAccessible = true }.get(targetObject)
+
+internal fun Any.shouldHaveField(fieldName: String, callback: (Any) -> Unit = {}) {
+    this shouldHave field(javaClass, fieldName, this)
+    callback(javaClass.readField(fieldName, this))
+}
+
+internal fun Any.shouldHaveFieldWithValue(fieldName: String, fieldValue: Any) {
+    this shouldHave field(javaClass, fieldName, this)
+    javaClass.readField(fieldName, this) shouldBe fieldValue
+}
+
+internal fun Any.parentClassShouldHaveFieldWithValue(fieldName: String, fieldValue: Any) {
+    this shouldHave field(javaClass.superclass, fieldName, this)
+    javaClass.superclass.readField(fieldName, this) shouldBe fieldValue
 }
