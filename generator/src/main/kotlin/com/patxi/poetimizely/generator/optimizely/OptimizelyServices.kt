@@ -11,7 +11,8 @@ internal interface ExperimentsService {
     suspend fun listExperiments(@Query("project_id") projectId: Long): List<OptimizelyExperiment>
 }
 
-internal data class Feature(val key: String)
+internal data class Feature(val key: String, val variables: Collection<Variable> = emptyList())
+internal data class Variable(val key: String, val type: String)
 
 internal interface FeaturesService {
     @GET("features")

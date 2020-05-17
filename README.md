@@ -4,8 +4,8 @@
 
 ## What is poetimizely ❓
 
-**poetimizely** is a library to generate type safe accessors for [Optimizely](https://www.optimizely.com/) experiments.
-Given a Project ID and a token it will generate classes for all the experiments and their variations.
+**poetimizely** is a library to generate type safe accessors for [Optimizely](https://www.optimizely.com/) experiments and features.
+Given a Project ID and a token it will generate classes for every experiment + variations and features + variables.
 
 ## Gradle setup ⚙
 
@@ -70,14 +70,23 @@ when (optimizely.getVariationForExperiment(Experiments.ExampleExperiment, userId
 
 ### Features 💡
 
-Features is more simple, all of them are contained in a single enum class.
+Kotlin objects will also be generated for features. For the set of variables that each of the features may have, a property is added to the object.
 
-Another extension function is provided to query if a features is enabled:
+To check whether a feature is enabled an extension function is provided:
 
 ```kotlin
-if (optimizely.isFeatureEnabled(Features.EXAMPLE_FEATURE, userId)) {
+if (optimizely.isFeatureEnabled(Features.ExampleFeature, userId)) {
     TODO()
 }
+```
+
+and also for getting feature variables values:
+
+```kotlin
+val booleanVariable: Boolean? = optimizely.getFeatureVariable(Features.ExampleFeature.exampleBooleanVariable)
+val stringVariable: String? = optimizely.getFeatureVariable(Features.ExampleFeature.exampleStringVariable)
+val doubleVariable: Double? = optimizely.getFeatureVariable(Features.ExampleFeature.exampleDoubleVariable)
+val intVariable: Int? = optimizely.getFeatureVariable(Features.ExampleFeature.exampleIntVariable)
 ```
 
 ## A look at the generated code 👀
@@ -123,10 +132,17 @@ sealed class Experiments<V : BaseVariation>(
 #### `Features.kt`
 
 ```kotlin
-enum class Features(
+class FeatureVariable<T>(
+    val featureKey: String,
+    val variableKey: String
+)
+
+sealed class Features(
     val key: String
 ) {
-    EXAMPLE_FEATURE("example-feature") // Your features will be here 
+    object ExampleFeature("example-feature") {
+        val exampleVariable: FeatureVariable<Boolean> = FeatureVariable("example-feature", "example-variable")
+    } 
 }
 
 fun Optimizely.isFeatureEnabled(
@@ -134,4 +150,32 @@ fun Optimizely.isFeatureEnabled(
     userId: String,
     attributes: Map<String, Any> = emptyMap()
 ): Boolean = this.isFeatureEnabled(feature.key, userId, attributes)
+
+fun Optimizely.getFeatureVariable(
+    variable: FeatureVariable<Boolean>,
+    userId: String,
+    attributes: Map<String, Any> = emptyMap()
+): Boolean? =
+    this.getFeatureVariableBoolean(variable.featureKey, variable.variableKey, userId, attributes)
+
+fun Optimizely.getFeatureVariable(
+    variable: FeatureVariable<String>,
+    userId: String,
+    attributes: Map<String, Any> = emptyMap()
+): String? =
+    this.getFeatureVariableString(variable.featureKey, variable.variableKey, userId, attributes)
+
+fun Optimizely.getFeatureVariable(
+    variable: FeatureVariable<Double>,
+    userId: String,
+    attributes: Map<String, Any> = emptyMap()
+): Double? =
+    this.getFeatureVariableDouble(variable.featureKey, variable.variableKey, userId, attributes)
+
+fun Optimizely.getFeatureVariable(
+    variable: FeatureVariable<Int>,
+    userId: String,
+    attributes: Map<String, Any> = emptyMap()
+): Int? =
+    this.getFeatureVariableInteger(variable.featureKey, variable.variableKey, userId, attributes)
 ```

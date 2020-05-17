@@ -3,15 +3,16 @@ package com.patxi.poetimizely.generator
 import com.optimizely.ab.Optimizely
 import com.patxi.poetimizely.generator.optimizely.OptimizelyExperiment
 import com.patxi.poetimizely.generator.optimizely.OptimizelyVariation
+import com.patxi.poetimizely.matchers.parentClassShouldHaveFieldWithValue
 import com.patxi.poetimizely.matchers.publicStaticMethod
+import com.patxi.poetimizely.matchers.shouldBeKotlinObject
+import com.patxi.poetimizely.matchers.shouldHaveFieldWithValue
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import io.kotest.core.spec.style.BehaviorSpec
-import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
-import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.collections.shouldBeSingleton
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldHave
-import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.mockk
 
 class ExperimentsGeneratorTest : BehaviorSpec({
@@ -31,29 +32,33 @@ class ExperimentsGeneratorTest : BehaviorSpec({
                     messageOutputStream = System.out
                 }.compile()
                 then("Generated code compiles") {
-                    fun loadClass(className: String): Class<*> =
-                        compilationResult.classLoader.loadClass("$packageName.$className")
-
                     compilationResult.exitCode shouldBe KotlinCompilation.ExitCode.OK
-                    // Variations enum
-                    val variationsClass = loadClass("TestExperimentVariations")
+                }
+                then("Kotlin objects for experiments and variations enums exist with their properties") {
+                    val variationsClass =
+                        compilationResult.classLoader.loadClass("$packageName.TestExperimentVariations")
                     with(variationsClass.enumConstants) {
-                        this shouldHaveSize optimizelyExperiment.variations.size
-                        this.shouldBeInstanceOf<Array<Any>>()
-                        this.map { it.getFieldValue("key") as String } shouldContainExactlyInAnyOrder optimizelyExperiment.variations.map { it.key }
+                        this.shouldBeSingleton {
+                            it.shouldHaveFieldWithValue("key", variationKey)
+                        }
                     }
-                    // Experiment object
-                    val testExperimentClass = loadClass("Experiments\$TestExperiment")
-                    val experimentObject = testExperimentClass.getField("INSTANCE").get(null)
-                    experimentObject.getFieldValueFromParentClass("key") shouldBe experimentKey
-                    experimentObject.getFieldValueFromParentClass("variations") shouldBe variationsClass.enumConstants
-                    // Optimizely extension functions
-                    val experimentClass = loadClass("Experiments")
-                    val extensionFunctionContainerClass = loadClass("ExperimentsKt")
+                    val experiment = compilationResult.classLoader.loadClass("$packageName.Experiments\$TestExperiment")
+                        .shouldBeKotlinObject()
+                    experiment.parentClassShouldHaveFieldWithValue("key", experimentKey)
+                    experiment.parentClassShouldHaveFieldWithValue("variations", variationsClass.enumConstants)
+                }
+                then("Optimizely extension function for experiments has been created") {
+                    val experimentClass = compilationResult.classLoader.loadClass("$packageName.Experiments")
+                    val extensionFunctionContainerClass =
+                        compilationResult.classLoader.loadClass("$packageName.ExperimentsKt")
                     with(extensionFunctionContainerClass) {
                         this shouldHave publicStaticMethod("getAllExperiments", Optimizely::class.java)
+                        val allExperiments = listOf(
+                            compilationResult.classLoader.loadClass("$packageName.Experiments\$TestExperiment")
+                                .shouldBeKotlinObject()
+                        )
                         this.getMethod("getAllExperiments", Optimizely::class.java)
-                            .invoke(null, mockk<Optimizely>()) shouldBe listOf(experimentObject)
+                            .invoke(null, mockk<Optimizely>()) shouldBe allExperiments
                         this shouldHave publicStaticMethod(
                             "getVariationForExperiment",
                             Optimizely::class.java,
@@ -67,9 +72,3 @@ class ExperimentsGeneratorTest : BehaviorSpec({
         }
     }
 })
-
-private fun Any.getFieldValue(fieldName: String): Any =
-    javaClass.getDeclaredField(fieldName).apply { isAccessible = true }.get(this)
-
-private fun Any.getFieldValueFromParentClass(fieldName: String): Any =
-    javaClass.superclass.getDeclaredField(fieldName).apply { isAccessible = true }.get(this)
