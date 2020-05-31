@@ -17,6 +17,9 @@ jobs:
       with:
         java-version: 1.8
 
+    - name: Set tag version in an environment variable (remove the first character)
+      run: echo ::set-env name=NEW_VERSION::$(echo ${{ github.event.release.tag_name }} | cut -c 2-)
+
     - name: Set generator version in an environment variable
       run: echo ::set-env name=GENERATOR_VERSION::$(./gradlew properties | grep ^version:)
       working-directory: ./generator
@@ -30,7 +33,7 @@ jobs:
       working-directory: ./maven-plugin
 
     - name: Check if there is a version mismatch between generator, gradle-plugin and maven-plugin
-      if: $GENERATOR_VERSION != $GRADLE_PLUGIN_VERSION || $GRADLE_PLUGIN_VERSION != $MAVEN_PLUGIN_VERSION
+      if: $GENERATOR_VERSION != $NEW_VERSION || $GRADLE_PLUGIN_VERSION != $NEW_VERSION || $MAVEN_PLUGIN_VERSION != $NEW_VERSION
       run: exit 1
 
     - name: Build and publish generator in local Maven repository
@@ -60,8 +63,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: ${{ github.ref }}
+        tag_name: ${{ env.NEW_VERSION }}
+        release_name: ${{ env.NEW_VERSION }}
         body: |
           https://plugins.gradle.org/plugin/com.patxi.poetimizely/${{ env.GRADLE_PLUGIN_VERSION }}
           https://bintray.com/patxibocos/com.patxi/poetimizely-generator/${{ env.GENERATOR_VERSION }}
