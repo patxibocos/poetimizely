@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -6,10 +7,33 @@
     <groupId>com.patxi</groupId>
     <artifactId>poetimizely-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>1.0.0-alpha01</version>
+    <version>1.0.0-beta02</version>
 
     <name>poetimizely</name>
-    <url>http://maven.apache.org</url>
+    <description>Generate Kotlin type safe accessors for Optimizely experiments and features</description>
+    <url>https://github.com/patxibocos/poetimizely</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com/patxibocos/poetimizely.git</connection>
+        <developerConnection>scm:git:ssh://github.com:patxibocos/poetimizely.git</developerConnection>
+        <url>http://github.com/patxibocos/poetimizely/tree/master</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>Patxi Bocos</name>
+            <email>patxi.bocos.vidal@gmail.com</email>
+            <url>https://twitter.com/patxibocos</url>
+            <timezone>Europe/Madrid</timezone>
+        </developer>
+    </developers>
 
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -63,6 +87,19 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -111,7 +148,7 @@
         <dependency>
             <groupId>com.patxi</groupId>
             <artifactId>poetimizely-generator</artifactId>
-            <version>1.0.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.optimizely.ab</groupId>
@@ -151,4 +188,13 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <distributionManagement>
+        <repository>
+            <id>bintray-patxibocos-com.patxi</id>
+            <name>patxibocos-com.patxi</name>
+            <url>
+                https://api.bintray.com/content/patxibocos/com.patxi/poetimizely-maven-plugin/${project.version}/;publish=1
+            </url>
+        </repository>
+    </distributionManagement>
 </project>

@@ -5,12 +5,22 @@ import com.patxi.poetimizely.generator.codeForFeatures
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.DefaultTask
 import org.gradle.api.plugins.JavaPluginConvention
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 
 open class GeneratorTask : DefaultTask() {
+    @Input
+    @Optional
     var optimizelyProjectId: Long? = null
+
+    @Input
+    @Optional
     var optimizelyToken: String? = null
+
+    @Input
+    @Optional
     var packageName: String? = null
 
     @TaskAction
