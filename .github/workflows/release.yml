@@ -18,7 +18,7 @@ jobs:
         java-version: 1.8
 
     - name: Set tag version in an environment variable (remove the first character)
-      run: echo ::set-env name=NEW_VERSION::$(echo ${{ github.event.release.tag_name }} | cut -c 2-)
+      run: echo ::set-env name=NEW_VERSION::$(echo ${GITHUB_REF/refs\/tags\//} | cut -c 2-)
 
     - name: Set generator version in an environment variable
       run: echo ::set-env name=GENERATOR_VERSION::$(./gradlew properties | grep ^version:)
