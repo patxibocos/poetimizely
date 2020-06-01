@@ -33,7 +33,7 @@ jobs:
       working-directory: ./maven-plugin
 
     - name: Check if there is a version mismatch between generator, gradle-plugin and maven-plugin
-      if: $GENERATOR_VERSION != $NEW_VERSION || $GRADLE_PLUGIN_VERSION != $NEW_VERSION || $MAVEN_PLUGIN_VERSION != $NEW_VERSION
+      if: ${{ env.GENERATOR_VERSION }} != ${{ env.NEW_VERSION }} || ${{ env.GRADLE_PLUGIN_VERSION }} != ${{ env.NEW_VERSION }} || ${{ env.MAVEN_PLUGIN_VERSION }} != ${{ env.NEW_VERSION }}
       run: exit 1
 
     - name: Build and publish generator in local Maven repository
