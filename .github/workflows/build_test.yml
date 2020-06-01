@@ -19,7 +19,7 @@ jobs:
         java-version: 1.8
 
     - name: Build and publish generator in local Maven repository
-      run: ./gradlew publish
+      run: ./gradlew publishToMavenLocal
       working-directory: ./generator
 
     - name: Test generator

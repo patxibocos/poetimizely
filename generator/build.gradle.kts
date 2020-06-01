@@ -1,12 +1,14 @@
+import com.jfrog.bintray.gradle.BintrayExtension.PackageConfig
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.patxi"
-version = "1.0.0"
+version = "1.0.0-beta02"
 
 plugins {
     jacoco
     `maven-publish`
     kotlin("jvm") version "1.3.72"
+    id("com.jfrog.bintray") version "1.8.5"
 }
 
 repositories {
@@ -54,13 +56,56 @@ tasks.jacocoTestReport {
     }
 }
 
+java {
+    withSourcesJar()
+}
+
 publishing {
     publications {
-        create<MavenPublication>("default") {
+        create<MavenPublication>("poetimizelyGenerator") {
             from(components["java"])
+            pom.withXml {
+                val root = asNode()
+                root.appendNode("name", project.name)
+                root.appendNode(
+                    "description",
+                    "poetimizely generator module that both Gradle and Maven plugins depend on"
+                )
+                root.appendNode("url", "https://github.com/patxibocos/poetimizely")
+
+                val mitLicenseNode = root.appendNode("licenses").appendNode("license")
+                mitLicenseNode.appendNode("name", "MIT License")
+                mitLicenseNode.appendNode("url", "http://www.opensource.org/licenses/mit-license.php")
+
+                val scmNode = root.appendNode("scm")
+                scmNode.appendNode("connection", "scm:git:git://github.com/patxibocos/poetimizely.git")
+                scmNode.appendNode("developerConnection", "scm:git:ssh://github.com:patxibocos/poetimizely.git")
+                scmNode.appendNode("url", "http://github.com/patxibocos/poetimizely/tree/master")
+
+                val developerNode = root.appendNode("developers").appendNode("developer")
+                developerNode.appendNode("name", "Patxi Bocos")
+                developerNode.appendNode("email", "patxi.bocos.vidal@gmail.com")
+                developerNode.appendNode("url", "https://twitter.com/patxibocos")
+                developerNode.appendNode("timezone", "Europe/Madrid")
+            }
         }
     }
     repositories {
         mavenLocal()
     }
+}
+
+bintray {
+    user = System.getenv("BINTRAY_API_USER")
+    key = System.getenv("BINTRAY_API_KEY")
+    publish = true
+    setPublications("poetimizelyGenerator")
+    pkg(delegateClosureOf<PackageConfig> {
+        repo = project.group.toString()
+        name = project.name
+        desc = "poetimizely generator module that both Gradle and Maven plugins depend on"
+        setLicenses("MIT")
+        githubRepo = "patxibocos/poetimizely"
+        vcsUrl = "https://github.com/patxibocos/poetimizely"
+    })
 }
