@@ -47,8 +47,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ env.NEW_VERSION }}
-        release_name: ${{ env.NEW_VERSION }}
+        tag_name: ${GITHUB_REF/refs\/tags\//}
+        release_name: ${GITHUB_REF/refs\/tags\//}
         body: |
           https://plugins.gradle.org/plugin/com.patxi.poetimizely/${{ env.NEW_VERSION }}
           https://bintray.com/patxibocos/com.patxi/poetimizely-generator/${{ env.NEW_VERSION }}
