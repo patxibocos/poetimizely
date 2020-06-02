@@ -6,7 +6,7 @@ on:
       - v*
 
 jobs:
-  publish_plugin:
+  publish:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,23 +17,20 @@ jobs:
       with:
         java-version: 1.8
 
-    - name: Set tag version in an environment variable (remove the first character)
-      run: echo ::set-env name=NEW_VERSION::$(echo ${GITHUB_REF/refs\/tags\//} | cut -c 2-)
-
-    - name: Set generator version in an environment variable
-      run: echo ::set-env name=GENERATOR_VERSION::$(./gradlew properties | grep ^version:)
-      working-directory: ./generator
-
-    - name: Set gradle-plugin version in an environment variable
-      run: echo ::set-env name=GRADLE_PLUGIN_VERSION::$(./gradlew properties | grep ^version:)
-      working-directory: ./gradle-plugin
-
-    - name: Set maven-plugin version in an environment variable
-      run: echo ::set-env name=MAVEN_PLUGIN_VERSION::$(./mvnw org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
-      working-directory: ./maven-plugin
+    - id: versions
+      name: Set versions
+      run: |
+        newVersion=$(echo ${GITHUB_REF/refs\/tags\//} | cut -c 2-)
+        generatorVersion=$(cd generator && ./gradlew properties -q | grep "version:" | awk '{print $2}')
+        gradlePluginVersion=$(cd gradle-plugin && ./gradlew properties -q | grep "version:" | awk '{print $2}')
+        mavenPluginVersion=$(cd maven-plugin && ./mvnw org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo "::set-output name=NEW_VERSION::$newVersion"
+        echo "::set-output name=GENERATOR_VERSION::$generatorVersion"
+        echo "::set-output name=GRADLE_PLUGIN_VERSION_VERSION::$gradlePluginVersion"
+        echo "::set-output name=MAVEN_PLUGIN_VERSION_VERSION::$mavenPluginVersion"
 
     - name: Check if there is a version mismatch between generator, gradle-plugin and maven-plugin
-      if: env.GENERATOR_VERSION != env.NEW_VERSION || env.GRADLE_PLUGIN_VERSION != env.NEW_VERSION || env.MAVEN_PLUGIN_VERSION != env.NEW_VERSION
+      if: ${{ steps.versions.outputs.GENERATOR_VERSION }} != ${{ steps.versions.outputs.NEW_VERSION }} || ${{ steps.versions.outputs.GRADLE_PLUGIN_VERSION }} != ${{ steps.versions.outputs.NEW_VERSION }} || ${{ steps.versions.outputs.MAVEN_PLUGIN_VERSION }} != ${{ steps.versions.outputs.NEW_VERSION }}
       run: exit 1
 
     - name: Build and publish generator in local Maven repository
@@ -63,9 +60,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ env.NEW_VERSION }}
-        release_name: ${{ env.NEW_VERSION }}
+        tag_name: ${{ steps.versions.outputs.NEW_VERSION }}
+        release_name: ${{ steps.versions.outputs.NEW_VERSION }}
         body: |
-          https://plugins.gradle.org/plugin/com.patxi.poetimizely/${{ env.GRADLE_PLUGIN_VERSION }}
-          https://bintray.com/patxibocos/com.patxi/poetimizely-generator/${{ env.GENERATOR_VERSION }}
-          https://bintray.com/patxibocos/com.patxi/poetimizely-maven-plugin/${{ env.MAVEN_PLUGIN_VERSION }}
+          https://plugins.gradle.org/plugin/com.patxi.poetimizely/${{ steps.versions.outputs.GRADLE_PLUGIN_VERSION }}
+          https://bintray.com/patxibocos/com.patxi/poetimizely-generator/${{ steps.versions.outputs.GENERATOR_VERSION }}
+          https://bintray.com/patxibocos/com.patxi/poetimizely-maven-plugin/${{ steps.versions.outputs.MAVEN_PLUGIN_VERSION }}
