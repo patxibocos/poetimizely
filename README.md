@@ -1,32 +1,34 @@
 [![codecov](https://codecov.io/gh/patxibocos/poetimizely/branch/master/graph/badge.svg)](https://codecov.io/gh/patxibocos/poetimizely)
 [![CI](https://github.com/patxibocos/poetimizely/workflows/CI/badge.svg)](https://github.com/patxibocos/poetimizely/actions?query=workflow%3ACI)
-[![gradle](https://img.shields.io/maven-metadata/v.svg?colorB=007ec6&label=gradle&metadataUrl=https%3A%2F%2Fplugins.gradle.org%2Fm2%2Fcom%2Fpatxi%2Fpoetimizely%2Fcom.patxi.poetimizely.gradle.plugin%2Fmaven-metadata.xml)](https://plugins.gradle.org/plugin/com.patxi.poetimizely)
+[![generator](https://img.shields.io/bintray/v/patxibocos/com.patxi/poetimizely-generator?label=generator)](https://bintray.com/patxibocos/com.patxi/poetimizely-generator)
+[![gradle-plugin](https://img.shields.io/maven-metadata/v.svg?colorB=007ec6&label=gradle-plugin&metadataUrl=https%3A%2F%2Fplugins.gradle.org%2Fm2%2Fcom%2Fpatxi%2Fpoetimizely%2Fcom.patxi.poetimizely.gradle.plugin%2Fmaven-metadata.xml)](https://plugins.gradle.org/plugin/com.patxi.poetimizely)
+[![maven-plugin](https://img.shields.io/bintray/v/patxibocos/com.patxi/poetimizely-maven-plugin?label=maven-plugin)](https://bintray.com/patxibocos/com.patxi/poetimizely-maven-plugin)
 
 ## What is poetimizely ❓
 
 **poetimizely** is a library to generate type safe accessors for [Optimizely](https://www.optimizely.com/) experiments and features.
 Given a Project ID and a token it will generate classes for every experiment + variations and features + variables.
 
-## Gradle setup ⚙
+## Setup ⚙
 
-There are just a few lines you need to add to your build Gradle file to use this plugin.
-
-ℹ️ Before editing the Gradle file, there are three properties required to configure explained below:
+ℹ️ Before editing the build file, there are three properties required to configure explained below:
 - **optimizelyProjectId** (Long): id of the Optimizely project to grab experiments and features from. 
 - **optimizelyToken** (String): Optimizely personal access token. See [Personal token authentication](https://docs.developers.optimizely.com/web/docs/personal-token).
 - **packageName** (String): package where the code will be placed. The expected format is `your.destination.package`.
+
+### Gradle 🐘
 
 #### Kotlin DSL (build.gradle.kts)
 
 ```kotlin
 plugins {
-  id("com.patxi.poetimizely") version "1.0.0-beta01"
+  id("com.patxi.poetimizely") version "1.0.0-beta02"
 }
 
 poetimizely {
-    optimizelyProjectId = <OPTIMIZELY_PROJECT_ID> 
-    optimizelyToken = <PERSONAL_ACCESS_TOKEN>
-    packageName = <PACKAGE_NAME>
+    optimizelyProjectId = $OPTIMIZELY_PROJECT_ID
+    optimizelyToken = $PERSONAL_ACCESS_TOKEN
+    packageName = $PACKAGE_NAME
 }
 ```
 
@@ -34,23 +36,52 @@ poetimizely {
 
 ```groovy
 plugins {
-  id "com.patxi.poetimizely" version "1.0.0-beta01"
+  id "com.patxi.poetimizely" version "1.0.0-beta02"
 }
 
 poetimizely {
-    optimizelyProjectId = <OPTIMIZELY_PROJECT_ID> 
-    optimizelyToken = <PERSONAL_ACCESS_TOKEN>
-    packageName = <PACKAGE_NAME>
+    optimizelyProjectId = $OPTIMIZELY_PROJECT_ID
+    optimizelyToken = $PERSONAL_ACCESS_TOKEN
+    packageName = $PACKAGE_NAME
 }
 
 ```
 
+### Maven 🕊️
+
+#### pom.xml
+
+```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>com.patxi</groupId>
+            <artifactId>poetimizely-maven-plugin</artifactId>
+            <version>1.0.0-beta02</version>
+            <configuration>
+                <optimizelyProjectId>$OPTIMIZELY_PROJECT_ID</optimizelyProjectId>
+                <optimizelyToken>$PERSONAL_ACCESS_TOKEN</optimizelyToken>
+                <packageName>$PACKAGE_NAME</packageName>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+```
+
 ## Usage 📋
 
-After the plugin has been setup, a new Gradle task named **poetimize** will be available. In order to run it successfully, both Optimizely project id and token must be valid.
+After the plugin has been setup, a new Gradle task / Maven goal named **poetimize** will be available. In order to run it successfully, both Optimizely project id and token must be valid.
+
+For Gradle projects run:
 
 ```shell
 ./gradlew poetimize
+```
+
+or with Maven:
+
+```shell
+./mvnw poetimizely:poetimize
 ```
 
 This will generate all the code based on the experiments (and its variants) and features defined for the given Optimizely project.
