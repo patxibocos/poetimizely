@@ -7,7 +7,7 @@
     <groupId>com.patxi</groupId>
     <artifactId>poetimizely-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>1.0.0-beta02</version>
+    <version>1.0.0-beta03</version>
 
     <name>poetimizely</name>
     <description>Generate Kotlin type safe accessors for Optimizely experiments and features</description>
