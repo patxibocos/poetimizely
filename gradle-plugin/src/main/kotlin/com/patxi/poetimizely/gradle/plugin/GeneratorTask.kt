@@ -25,12 +25,14 @@ open class GeneratorTask : DefaultTask() {
 
     @TaskAction
     fun doAction() {
-        val mainSrcDirs =
-                project.convention.getPlugin(JavaPluginConvention::class.java).sourceSets.getByName("main").allSource.srcDirs
-        val targetDir =
-                requireNotNull(mainSrcDirs.find { it.name == "kotlin" } ?: mainSrcDirs.find { it.name == "java" }) {
-                    "Cannot find a source directory for Java/Kotlin"
-                }
+        val mainSourceSet = project.convention.getPlugin(JavaPluginConvention::class.java).sourceSets.findByName("main")
+        val targetDir = (if (mainSourceSet != null) {
+            val mainSrcDirs = mainSourceSet.allSource.srcDirs
+            mainSrcDirs.find { it.name == "kotlin" } ?: mainSrcDirs.find { it.name == "java" }
+        } else {
+            project.projectDir.resolve("src/main/kotlin").takeIf { it.exists() }
+                    ?: project.projectDir.resolve("src/main/java").takeIf { it.exists() }
+        }) ?: error("Cannot find the source directory")
         val optimizelyProjectId = optimizelyProjectId
         val optimizelyToken = optimizelyToken
         val packageName = packageName

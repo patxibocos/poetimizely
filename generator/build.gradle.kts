@@ -2,7 +2,7 @@ import com.jfrog.bintray.gradle.BintrayExtension.PackageConfig
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.patxi"
-version = "1.0.0-beta02"
+version = "1.0.0-beta03"
 
 plugins {
     jacoco
