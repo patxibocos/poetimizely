@@ -26,23 +26,24 @@ open class GeneratorTask : DefaultTask() {
     @TaskAction
     fun doAction() {
         val mainSourceSet = project.convention.getPlugin(JavaPluginConvention::class.java).sourceSets.findByName("main")
-        val targetDir = (if (mainSourceSet != null) {
+        val targetDir = if (mainSourceSet != null) {
             val mainSrcDirs = mainSourceSet.allSource.srcDirs
             mainSrcDirs.find { it.name == "kotlin" } ?: mainSrcDirs.find { it.name == "java" }
         } else {
             project.projectDir.resolve("src/main/kotlin").takeIf { it.exists() }
-                    ?: project.projectDir.resolve("src/main/java").takeIf { it.exists() }
-        }) ?: error("Cannot find the source directory")
+                ?: project.projectDir.resolve("src/main/java").takeIf { it.exists() }
+        } ?: error("Cannot find the source directory")
         val optimizelyProjectId = optimizelyProjectId
         val optimizelyToken = optimizelyToken
         val packageName = packageName
         if (optimizelyProjectId == null || optimizelyToken == null || packageName == null) {
             logger.error(
-                    """
+                """
                     |Skipping generator task as missing required arguments:
                     |- optimizelyProjectId
                     |- optimizelyToken
-                    |- packageName""".trimMargin()
+                    |- packageName"""
+                    .trimMargin()
             )
             return
         }
@@ -58,5 +59,4 @@ open class GeneratorTask : DefaultTask() {
     }
 }
 
-private fun File.toPackageFolder(packageName: String): File =
-        packageName.split(".").fold(this) { acc, s -> acc.resolve(s) }
+private fun File.toPackageFolder(packageName: String): File = packageName.split(".").fold(this) { acc, s -> acc.resolve(s) }

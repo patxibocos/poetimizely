@@ -20,7 +20,7 @@ class BuildScriptTest : BehaviorSpec({
                     kotlin("jvm") version "1.3.72"
                     id("com.patxi.poetimizely")
                 }
-            """.trimIndent()
+                """.trimIndent()
             )
             `when`("Poetimize task runs") {
                 val buildResult = GradleRunner.create()
