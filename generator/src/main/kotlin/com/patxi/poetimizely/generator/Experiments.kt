@@ -132,9 +132,11 @@ private fun getAllExperimentsFunSpec(
                 baseExperimentClassName.parameterizedBy(WildcardTypeName.producerOf(baseVariationClassName))
             )
         )
-        .addStatement("""return listOf(${optimizelyExperiments.joinToString {
-            "Experiments.${it.key.optimizelyExperimentKeyToObjectName()}"
-        }})""".trimIndent())
+        .addStatement(
+            """return listOf(${optimizelyExperiments.joinToString {
+                "Experiments.${it.key.optimizelyExperimentKeyToObjectName()}"
+            }})""".trimIndent()
+        )
         .build()
 
 private fun getVariationForExperimentFunSpec(

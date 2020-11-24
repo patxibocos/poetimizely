@@ -5,9 +5,9 @@ version = "1.0.0-beta03"
 
 plugins {
     `java-gradle-plugin`
-    id("com.gradle.plugin-publish") version "0.11.0"
+    id("com.gradle.plugin-publish") version "0.12.0"
     jacoco
-    kotlin("jvm") version "1.3.72"
+    kotlin("jvm") version "1.4.20"
 }
 
 repositories {
@@ -17,19 +17,17 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
-
     implementation("com.patxi:poetimizely-generator:$version")
-    implementation("com.optimizely.ab:core-api:3.4.1")
-    implementation("com.squareup:kotlinpoet:1.5.0")
-    implementation("com.squareup.retrofit2:retrofit:2.7.2")
-    implementation("com.squareup.retrofit2:converter-gson:2.7.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.4")
+    implementation("com.optimizely.ab:core-api:3.7.0")
+    implementation("com.squareup:kotlinpoet:1.7.2")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
 
-    testImplementation("com.github.tschuchortdev:kotlin-compile-testing:1.2.7")
-    testImplementation("io.kotest:kotest-runner-junit5-jvm:4.0.5")
-    testImplementation("io.kotest:kotest-assertions-core-jvm:4.0.5")
-    testImplementation("io.mockk:mockk:1.9.3")
+    testImplementation("com.github.tschuchortdev:kotlin-compile-testing:1.2.9")
+    testImplementation("io.kotest:kotest-runner-junit5-jvm:4.3.1")
+    testImplementation("io.kotest:kotest-assertions-core-jvm:4.3.1")
+    testImplementation("io.mockk:mockk:1.10.2")
     testImplementation(gradleTestKit())
 }
 

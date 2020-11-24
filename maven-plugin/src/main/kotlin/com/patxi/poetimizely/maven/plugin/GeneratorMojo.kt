@@ -40,4 +40,4 @@ class GeneratorMojo : AbstractMojo() {
 }
 
 private fun File.toPackageFolder(packageName: String): File =
-        packageName.split(".").fold(this) { acc, s -> acc.resolve(s) }
+    packageName.split(".").fold(this) { acc, s -> acc.resolve(s) }
