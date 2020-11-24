@@ -22,7 +22,7 @@ Given a Project ID and a token it will generate classes for every experiment + v
 
 ```kotlin
 plugins {
-  id("com.patxi.poetimizely") version "1.0.0-beta02"
+  id("com.patxi.poetimizely") version "1.0.0"
 }
 
 poetimizely {
@@ -36,7 +36,7 @@ poetimizely {
 
 ```groovy
 plugins {
-  id "com.patxi.poetimizely" version "1.0.0-beta02"
+  id "com.patxi.poetimizely" version "1.0.0"
 }
 
 poetimizely {
@@ -57,7 +57,7 @@ poetimizely {
         <plugin>
             <groupId>com.patxi</groupId>
             <artifactId>poetimizely-maven-plugin</artifactId>
-            <version>1.0.0-beta02</version>
+            <version>1.0.0</version>
             <configuration>
                 <optimizelyProjectId>$OPTIMIZELY_PROJECT_ID</optimizelyProjectId>
                 <optimizelyToken>$PERSONAL_ACCESS_TOKEN</optimizelyToken>

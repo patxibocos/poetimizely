@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.patxi"
-version = "1.0.0-beta03"
+version = "1.0.0"
 
 plugins {
     `java-gradle-plugin`
