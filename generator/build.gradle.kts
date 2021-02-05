@@ -7,7 +7,7 @@ version = "1.0.0"
 plugins {
     jacoco
     `maven-publish`
-    kotlin("jvm") version "1.4.20"
+    kotlin("jvm") version "1.4.30"
     id("com.jfrog.bintray") version "1.8.5"
 }
 
@@ -17,16 +17,16 @@ repositories {
 }
 
 dependencies {
-    implementation("com.optimizely.ab:core-api:3.7.0")
+    implementation("com.optimizely.ab:core-api:3.8.0")
     implementation("com.squareup:kotlinpoet:1.7.2")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
 
-    testImplementation("com.github.tschuchortdev:kotlin-compile-testing:1.2.9")
-    testImplementation("io.kotest:kotest-runner-junit5-jvm:4.3.1")
-    testImplementation("io.kotest:kotest-assertions-core-jvm:4.3.1")
-    testImplementation("io.mockk:mockk:1.10.2")
+    testImplementation("com.github.tschuchortdev:kotlin-compile-testing:1.3.4")
+    testImplementation("io.kotest:kotest-runner-junit5-jvm:4.4.0")
+    testImplementation("io.kotest:kotest-assertions-core-jvm:4.4.0")
+    testImplementation("io.mockk:mockk:1.10.5")
     testImplementation(gradleTestKit())
 }
 
