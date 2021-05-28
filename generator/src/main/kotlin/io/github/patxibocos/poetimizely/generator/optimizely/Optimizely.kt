@@ -1,4 +1,4 @@
-package com.patxi.poetimizely.generator.optimizely
+package io.github.patxibocos.poetimizely.generator.optimizely
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

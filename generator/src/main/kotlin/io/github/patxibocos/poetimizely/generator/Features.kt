@@ -1,8 +1,6 @@
-package com.patxi.poetimizely.generator
+package io.github.patxibocos.poetimizely.generator
 
 import com.optimizely.ab.Optimizely
-import com.patxi.poetimizely.generator.optimizely.Feature
-import com.patxi.poetimizely.generator.optimizely.Variable
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
@@ -14,6 +12,8 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asTypeName
+import io.github.patxibocos.poetimizely.generator.optimizely.Feature
+import io.github.patxibocos.poetimizely.generator.optimizely.Variable
 import java.io.StringWriter
 
 /**

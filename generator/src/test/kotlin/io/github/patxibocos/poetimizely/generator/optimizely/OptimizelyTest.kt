@@ -1,4 +1,4 @@
-package com.patxi.poetimizely.generator.optimizely
+package io.github.patxibocos.poetimizely.generator.optimizely
 
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe

@@ -1,4 +1,4 @@
-package com.patxi.poetimizely.matchers
+package io.github.patxibocos.poetimizely.matchers
 
 import io.kotest.matchers.Matcher
 import io.kotest.matchers.MatcherResult

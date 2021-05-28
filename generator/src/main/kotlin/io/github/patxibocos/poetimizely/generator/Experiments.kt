@@ -1,8 +1,6 @@
-package com.patxi.poetimizely.generator
+package io.github.patxibocos.poetimizely.generator
 
 import com.optimizely.ab.Optimizely
-import com.patxi.poetimizely.generator.optimizely.OptimizelyExperiment
-import com.patxi.poetimizely.generator.optimizely.OptimizelyVariation
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
@@ -14,6 +12,8 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.WildcardTypeName
+import io.github.patxibocos.poetimizely.generator.optimizely.OptimizelyExperiment
+import io.github.patxibocos.poetimizely.generator.optimizely.OptimizelyVariation
 import java.io.StringWriter
 
 internal fun generateExperimentsCode(optimizelyExperiments: List<OptimizelyExperiment>, packageName: String): String {

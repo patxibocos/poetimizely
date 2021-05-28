@@ -1,14 +1,14 @@
-package com.patxi.poetimizely.generator
+package io.github.patxibocos.poetimizely.generator
 
 import com.optimizely.ab.Optimizely
-import com.patxi.poetimizely.generator.optimizely.OptimizelyExperiment
-import com.patxi.poetimizely.generator.optimizely.OptimizelyVariation
-import com.patxi.poetimizely.matchers.parentClassShouldHaveFieldWithValue
-import com.patxi.poetimizely.matchers.publicStaticMethod
-import com.patxi.poetimizely.matchers.shouldBeKotlinObject
-import com.patxi.poetimizely.matchers.shouldHaveFieldWithValue
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
+import io.github.patxibocos.poetimizely.generator.optimizely.OptimizelyExperiment
+import io.github.patxibocos.poetimizely.generator.optimizely.OptimizelyVariation
+import io.github.patxibocos.poetimizely.matchers.parentClassShouldHaveFieldWithValue
+import io.github.patxibocos.poetimizely.matchers.publicStaticMethod
+import io.github.patxibocos.poetimizely.matchers.shouldBeKotlinObject
+import io.github.patxibocos.poetimizely.matchers.shouldHaveFieldWithValue
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.collections.shouldBeSingleton
 import io.kotest.matchers.shouldBe

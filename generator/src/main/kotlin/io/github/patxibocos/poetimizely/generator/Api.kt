@@ -1,10 +1,10 @@
 @file:JvmName("Api")
 
-package com.patxi.poetimizely.generator
+package io.github.patxibocos.poetimizely.generator
 
-import com.patxi.poetimizely.generator.optimizely.authenticatedRetrofit
-import com.patxi.poetimizely.generator.optimizely.buildExperimentsService
-import com.patxi.poetimizely.generator.optimizely.buildFeaturesService
+import io.github.patxibocos.poetimizely.generator.optimizely.authenticatedRetrofit
+import io.github.patxibocos.poetimizely.generator.optimizely.buildExperimentsService
+import io.github.patxibocos.poetimizely.generator.optimizely.buildFeaturesService
 
 suspend fun codeForExperiments(optimizelyProjectId: Long, optimizelyToken: String, packageName: String): String {
     val authenticatedRetrofit = authenticatedRetrofit(optimizelyToken)

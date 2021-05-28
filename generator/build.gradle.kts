@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-group = "com.patxi"
+group = "io.github.patxibocos"
 version = "1.0.1"
 
 plugins {
