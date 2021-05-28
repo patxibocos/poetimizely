@@ -1,4 +1,4 @@
-package com.patxi.poetimizely.generator.optimizely
+package io.github.patxibocos.poetimizely.generator.optimizely
 
 import retrofit2.http.GET
 import retrofit2.http.Query

@@ -35,7 +35,7 @@ jobs:
       working-directory: ./maven-plugin
 
     - name: Ktlint generator
-      run: ./gradlew ktlint
+      run: ./gradlew spotlessCheck
       working-directory: ./generator
 
     - name: Ktlint gradle-plugin
