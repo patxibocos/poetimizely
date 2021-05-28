@@ -206,8 +206,6 @@ private fun featureVariablePropertySpec(
  *
  * The key will be used "to determine whether the feature is on or off in your code".
  */
-private fun String.optimizelyFeatureKeyToObjectName(): String =
-    split("-", "_").joinToString("") { it.trim().capitalize() }
+private fun String.optimizelyFeatureKeyToObjectName(): String = split("-", "_").joinToString("") { it.trim().replaceFirstChar(Char::uppercase) }
 
-private fun String.optimizelyFeatureVariableKeyToPropertyName(): String =
-    split("-", "_").joinToString("") { it.trim().capitalize() }.decapitalize()
+private fun String.optimizelyFeatureVariableKeyToPropertyName(): String = split("-", "_").joinToString("") { it.trim().replaceFirstChar(Char::uppercase) }.replaceFirstChar(Char::lowercase)

@@ -165,10 +165,10 @@ private fun getVariationForExperimentFunSpec(
     }
 
 private fun String.optimizelyExperimentKeyToObjectName(): String =
-    split("-", "_").joinToString("") { it.toLowerCase().capitalize() }
+    split("-", "_").joinToString("") { it.lowercase().replaceFirstChar(Char::uppercase) }
 
 private fun String.optimizelyExperimentKeyToVariationEnumName(): String =
-    split("-", "_").joinToString("") { it.toLowerCase().capitalize() } + "Variations"
+    split("-", "_").joinToString("") { it.lowercase().replaceFirstChar(Char::uppercase) } + "Variations"
 
 private fun String.optimizelyExperimentKeyToVariationEnumConstant(): String =
-    split("-", "_").joinToString("_") { it.toUpperCase() }
+    split("-", "_").joinToString("_") { it.uppercase() }
