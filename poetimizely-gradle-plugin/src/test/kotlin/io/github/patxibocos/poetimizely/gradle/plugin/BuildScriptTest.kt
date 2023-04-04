@@ -18,7 +18,7 @@ class BuildScriptTest : BehaviorSpec({
                 """
                 plugins { 
                     kotlin("jvm") version "1.8.20"
-                    id("poetimizely.gradle.plugin")
+                    id("io.github.patxibocos.poetimizely")
                 }
                 """.trimIndent(),
             )

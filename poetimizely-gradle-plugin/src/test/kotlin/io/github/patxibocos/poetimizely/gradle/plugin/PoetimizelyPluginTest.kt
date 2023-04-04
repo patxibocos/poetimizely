@@ -11,7 +11,7 @@ class PoetimizelyPluginTest : BehaviorSpec({
     given("A Gradle project") {
         val project = ProjectBuilder.builder().build()
         `when`("Poetimizely plugin is applied") {
-            project.pluginManager.apply("poetimizely.gradle.plugin")
+            project.pluginManager.apply("io.github.patxibocos.poetimizely")
             then("Plugin is contained") {
                 project.plugins.getPlugin(PoetimizelyPlugin::class.java) shouldNotBe null
             }
