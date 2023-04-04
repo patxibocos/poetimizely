@@ -12,7 +12,7 @@ repositories {
 dependencies {
     implementation("com.optimizely.ab:core-api:3.7.0")
     implementation("com.optimizely.ab:core-httpclient-impl:3.4.3")
-    implementation("org.apache.httpcomponents:httpclient:4.5.13")
+    implementation("org.apache.httpcomponents:httpclient:4.5.14")
 
     implementation("com.fasterxml.jackson.core:jackson-core:2.11.3")
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.11.3")
