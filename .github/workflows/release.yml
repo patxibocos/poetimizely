@@ -61,6 +61,6 @@ jobs:
         tag_name: ${{ env.NEW_VERSION_NAME }}
         release_name: ${{ env.NEW_VERSION_NAME }}
         body: |
-          https://plugins.gradle.org/plugin/com.patxi.poetimizely/${{ env.NEW_VERSION_CODE }}
-          https://bintray.com/patxibocos/com.patxi/poetimizely-generator/${{ env.NEW_VERSION_CODE }}
-          https://bintray.com/patxibocos/com.patxi/poetimizely-maven-plugin/${{ env.NEW_VERSION_CODE }}
+          https://plugins.gradle.org/plugin/io.github.patxibocos.poetimizely/${{ env.NEW_VERSION_CODE }}
+          https://central.sonatype.com/artifact/io.github.patxibocos/poetimizely-core/${{ env.NEW_VERSION_CODE }}
+          https://central.sonatype.com/artifact/io.github.patxibocos/poetimizely-maven-plugin/${{ env.NEW_VERSION_CODE }}
