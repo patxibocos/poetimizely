@@ -1,8 +1,8 @@
-[![codecov](https://codecov.io/gh/patxibocos/poetimizely/branch/master/graph/badge.svg)](https://codecov.io/gh/patxibocos/poetimizely)
+[![codecov](https://codecov.io/gh/patxibocos/poetimizely/branch/main/graph/badge.svg)](https://codecov.io/gh/patxibocos/poetimizely)
 [![CI](https://github.com/patxibocos/poetimizely/workflows/CI/badge.svg)](https://github.com/patxibocos/poetimizely/actions?query=workflow%3ACI)
-[![generator](https://img.shields.io/bintray/v/patxibocos/com.patxi/poetimizely-generator?label=generator)](https://bintray.com/patxibocos/com.patxi/poetimizely-generator)
-[![gradle-plugin](https://img.shields.io/maven-metadata/v.svg?colorB=007ec6&label=gradle-plugin&metadataUrl=https%3A%2F%2Fplugins.gradle.org%2Fm2%2Fcom%2Fpatxi%2Fpoetimizely%2Fcom.patxi.poetimizely.gradle.plugin%2Fmaven-metadata.xml)](https://plugins.gradle.org/plugin/com.patxi.poetimizely)
-[![maven-plugin](https://img.shields.io/bintray/v/patxibocos/com.patxi/poetimizely-maven-plugin?label=maven-plugin)](https://bintray.com/patxibocos/com.patxi/poetimizely-maven-plugin)
+[![generator](https://img.shields.io/maven-central/v/io.github.patxibocos/poetimizely-core?label=poetimizely-core&color=blue)](https://mvnrepository.com/artifact/io.github.patxibocos/poetimizely-core)
+[![gradle-plugin](https://img.shields.io/gradle-plugin-portal/v/io.github.patxibocos.poetimizely?label=poetimizely-gradle-plugin&color=red)](https://plugins.gradle.org/plugin/io.github.patxibocos.poetimizely)
+[![maven-plugin](https://img.shields.io/maven-central/v/io.github.patxibocos/poetimizely-maven-plugin?label=poetimizely-maven-plugin&color=blue)](https://mvnrepository.com/artifact/io.github.patxibocos/poetimizely-maven-plugin)
 
 ## What is poetimizely ❓
 
@@ -22,7 +22,7 @@ Given a Project ID and a token it will generate classes for every experiment + v
 
 ```kotlin
 plugins {
-  id("com.patxi.poetimizely") version "1.0.0"
+  id("io.github.patxibocos.poetimizely") version "1.0.5"
 }
 
 poetimizely {
@@ -36,7 +36,7 @@ poetimizely {
 
 ```groovy
 plugins {
-  id "com.patxi.poetimizely" version "1.0.0"
+  id "io.github.patxibocos.poetimizely" version "1.0.5"
 }
 
 poetimizely {
@@ -55,9 +55,9 @@ poetimizely {
 <build>
     <plugins>
         <plugin>
-            <groupId>com.patxi</groupId>
+            <groupId>io.github.patxibocos</groupId>
             <artifactId>poetimizely-maven-plugin</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.5</version>
             <configuration>
                 <optimizelyProjectId>$OPTIMIZELY_PROJECT_ID</optimizelyProjectId>
                 <optimizelyToken>$PERSONAL_ACCESS_TOKEN</optimizelyToken>
@@ -131,7 +131,7 @@ interface BaseVariation {
     val key: String
 }
 
-fun Optimizely.getAllExperiments(): List<Experiments<out BaseVariation>> =
+fun getAllExperiments(): List<Experiments<out BaseVariation>> =
     listOf(Experiments.ExampleExperiment)
 
 fun <V : BaseVariation> Optimizely.getVariationForExperiment(
@@ -175,6 +175,8 @@ sealed class Features(
         val exampleVariable: FeatureVariable<Boolean> = FeatureVariable("example-feature", "example-variable")
     } 
 }
+
+public fun getAllFeatures(): List<Features> = listOf(Features.ExampleFeature)
 
 fun Optimizely.isFeatureEnabled(
     feature: Features,
