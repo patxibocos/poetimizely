@@ -23,18 +23,6 @@ jobs:
       run: ./gradlew publishToMavenLocal -PskipSigning
       working-directory: ./poetimizely-core
 
-    - name: Test core
-      run: ./gradlew test
-      working-directory: ./poetimizely-core
-
-    - name: Test gradle-plugin
-      run: ./gradlew test
-      working-directory: ./poetimizely-gradle-plugin
-
-    - name: Test maven-plugin
-      run: ./mvnw test
-      working-directory: ./poetimizely-maven-plugin
-
     - name: Spotless core
       run: ./gradlew spotlessCheck
       working-directory: ./poetimizely-core
@@ -47,7 +35,17 @@ jobs:
       run: ./mvnw spotless:check
       working-directory: ./poetimizely-maven-plugin
 
+    - name: Test core
+      run: ./gradlew test
+      working-directory: ./poetimizely-core
+
+    - name: Test gradle-plugin
+      run: ./gradlew test
+      working-directory: ./poetimizely-gradle-plugin
+
+    - name: Test maven-plugin
+      run: ./mvnw test
+      working-directory: ./poetimizely-maven-plugin
+
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
-      with:
-        file: ./poetimizely-core/build/reports/jacoco/test/jacoco.xml,./poetimizely-gradle-plugin/build/reports/jacoco/test/jacoco.xml,./poetimizely-maven-plugin/build/reports/jacoco/test/jacoco.xml
