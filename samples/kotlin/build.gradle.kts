@@ -14,7 +14,7 @@ dependencies {
     implementation("com.optimizely.ab:core-httpclient-impl:3.4.3")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
 
-    implementation("com.fasterxml.jackson.core:jackson-core:2.11.3")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.14.2")
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.14.2")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.11.3")
 
