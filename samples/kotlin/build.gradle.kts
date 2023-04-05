@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.optimizely.ab:core-api:3.7.0")
+    implementation("com.optimizely.ab:core-api:3.10.3")
     implementation("com.optimizely.ab:core-httpclient-impl:3.10.3")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
 
