@@ -1,7 +1,7 @@
 plugins {
     application
     kotlin("jvm") version "1.4.20"
-    id("com.patxi.poetimizely") version "1.0.0"
+    id("com.patxi.poetimizely") version "1.0.1"
 }
 
 repositories {
