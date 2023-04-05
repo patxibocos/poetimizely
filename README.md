@@ -1,8 +1,8 @@
 [![codecov](https://codecov.io/gh/patxibocos/poetimizely/branch/main/graph/badge.svg)](https://codecov.io/gh/patxibocos/poetimizely)
 [![CI](https://github.com/patxibocos/poetimizely/workflows/CI/badge.svg)](https://github.com/patxibocos/poetimizely/actions?query=workflow%3ACI)
-[![generator](https://img.shields.io/maven-central/v/io.github.patxibocos/poetimizely-core?label=poetimizely-core&color=blue)](https://mvnrepository.com/artifact/io.github.patxibocos/poetimizely-core)
-[![gradle-plugin](https://img.shields.io/gradle-plugin-portal/v/io.github.patxibocos.poetimizely?label=poetimizely-gradle-plugin&color=red)](https://plugins.gradle.org/plugin/io.github.patxibocos.poetimizely)
-[![maven-plugin](https://img.shields.io/maven-central/v/io.github.patxibocos/poetimizely-maven-plugin?label=poetimizely-maven-plugin&color=blue)](https://mvnrepository.com/artifact/io.github.patxibocos/poetimizely-maven-plugin)
+[![poetimizely-core](https://img.shields.io/maven-central/v/io.github.patxibocos/poetimizely-core?label=poetimizely-core&color=blue)](https://search.maven.org/artifact/io.github.patxibocos/poetimizely-core)
+[![poetimizely-gradle-plugin](https://img.shields.io/gradle-plugin-portal/v/io.github.patxibocos.poetimizely?label=poetimizely-gradle-plugin&color=red)](https://plugins.gradle.org/plugin/io.github.patxibocos.poetimizely)
+[![poetimizely-maven-plugin](https://img.shields.io/maven-central/v/io.github.patxibocos/poetimizely-maven-plugin?label=poetimizely-maven-plugin&color=blue)](https://search.maven.org/artifact/io.github.patxibocos/poetimizely-maven-plugin)
 
 ## What is poetimizely ❓
 
@@ -135,7 +135,7 @@ fun getAllExperiments(): List<Experiments<out BaseVariation>> =
     listOf(Experiments.ExampleExperiment)
 
 fun <V : BaseVariation> Optimizely.getVariationForExperiment(
-    experiment: Experiments<out V>,
+    experiment: Experiments<V>,
     userId: String,
     attributes: Map<String, Any> = emptyMap()
 ): V? {
