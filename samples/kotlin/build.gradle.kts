@@ -15,7 +15,7 @@ dependencies {
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
 
     implementation("com.fasterxml.jackson.core:jackson-core:2.11.3")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:2.11.3")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.14.2")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.11.3")
 
     implementation("org.slf4j:slf4j-api:1.7.36")
