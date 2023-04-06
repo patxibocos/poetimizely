@@ -5,7 +5,7 @@ plugins {
     jacoco
     `maven-publish`
     signing
-    id("com.diffplug.spotless") version "6.17.0"
+    id("com.diffplug.spotless") version "6.18.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
     kotlin("jvm") version "1.8.20"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.20"
