@@ -17,7 +17,7 @@ repositories {
 
 dependencies {
     implementation("com.optimizely.ab:core-api:3.10.3")
-    implementation("com.squareup:kotlinpoet:1.12.0")
+    implementation("com.squareup:kotlinpoet:1.13.0")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
     implementation("io.ktor:ktor-client-core:2.2.4")
     implementation("io.ktor:ktor-client-content-negotiation:2.2.4")
