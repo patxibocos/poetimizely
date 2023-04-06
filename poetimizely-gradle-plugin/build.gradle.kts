@@ -5,7 +5,7 @@ plugins {
     `java-gradle-plugin`
     id("com.gradle.plugin-publish") version "1.1.0"
     jacoco
-    id("com.diffplug.spotless") version "6.17.0"
+    id("com.diffplug.spotless") version "6.18.0"
     kotlin("jvm") version "1.8.20"
 }
 
