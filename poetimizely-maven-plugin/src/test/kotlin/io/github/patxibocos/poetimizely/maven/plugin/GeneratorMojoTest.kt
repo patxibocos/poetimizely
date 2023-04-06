@@ -6,22 +6,22 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import org.apache.maven.plugin.testing.MojoRule
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Rule
-import org.junit.Test
+import org.apache.maven.plugin.testing.AbstractMojoTestCase
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.io.File
 
-class GeneratorMojoTest {
+class GeneratorMojoTest : AbstractMojoTestCase() {
 
-    @get:Rule
-    val rule = MojoRule()
+    @BeforeEach
+    override fun setUp() {
+        super.setUp()
+    }
 
     @Test
     fun `A Maven project with the plugin applied contains the poetimize goal and is able to execute it`() {
         val testPom = File("src/test/resources/test-pom.xml")
-        val generatorMojo = rule.lookupMojo("poetimize", testPom) as GeneratorMojo?
+        val generatorMojo = super.lookupMojo("poetimize", testPom) as GeneratorMojo?
         requireNotNull(generatorMojo)
         val sourceDirectory = "src/test/kotlin"
         generatorMojo.project = mockk {
