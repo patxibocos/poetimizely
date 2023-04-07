@@ -11,16 +11,16 @@ import java.io.File
 
 @Mojo(name = "poetimize")
 class GeneratorMojo : AbstractMojo() {
-    @Parameter(defaultValue = "\${project}", required = true, readonly = true)
+    @Parameter(defaultValue = "\${project}", required = true, readonly = false)
     lateinit var project: MavenProject
 
-    @Parameter(property = "poetimizely.optimizelyProjectId", required = true, readonly = true)
+    @Parameter(property = "poetimizely.optimizelyProjectId", required = true, readonly = false)
     var optimizelyProjectId: Long = 0L
 
-    @Parameter(property = "poetimizely.optimizelyToken", required = true, readonly = true)
+    @Parameter(property = "poetimizely.optimizelyToken", required = true, readonly = false)
     lateinit var optimizelyToken: String
 
-    @Parameter(property = "poetimizely.packageName", required = true, readonly = true)
+    @Parameter(property = "poetimizely.packageName", required = true, readonly = false)
     lateinit var packageName: String
 
     override fun execute() {

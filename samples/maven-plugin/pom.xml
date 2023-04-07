@@ -1,0 +1,56 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.github.patxibocos</groupId>
+    <artifactId>poetimizely-maven-plugin-sample</artifactId>
+    <version>1.0.0</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <kotlin.version>1.8.20</kotlin.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.optimizely.ab</groupId>
+            <artifactId>core-api</artifactId>
+            <version>3.10.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.optimizely.ab</groupId>
+            <artifactId>core-httpclient-impl</artifactId>
+            <version>3.10.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+        <plugins>
+            <plugin>
+                <groupId>io.github.patxibocos</groupId>
+                <artifactId>poetimizely-maven-plugin</artifactId>
+                <version>1.0.5</version>
+                <configuration>
+                    <optimizelyProjectId>${env.OPTIMIZELY_PROJECT_ID}</optimizelyProjectId>
+                    <optimizelyToken>${env.OPTIMIZELY_TOKEN}</optimizelyToken>
+                    <packageName>pack.age</packageName>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+
+                <extensions>true</extensions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
