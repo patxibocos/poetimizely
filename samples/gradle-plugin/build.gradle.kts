@@ -1,3 +1,5 @@
+group = "io.github.patxibocos"
+
 plugins {
     application
     kotlin("jvm") version "1.8.20"

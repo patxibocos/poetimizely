@@ -1,1 +1,1 @@
-rootProject.name = "gradle-plugin"
+rootProject.name = "poetimizely-gradle-plugin-sample"
