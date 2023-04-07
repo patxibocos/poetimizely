@@ -3,7 +3,7 @@ version = "1.0.5"
 
 plugins {
     `java-gradle-plugin`
-    id("com.gradle.plugin-publish") version "1.1.0"
+    id("com.gradle.plugin-publish") version "1.2.0"
     jacoco
     id("com.diffplug.spotless") version "6.18.0"
     kotlin("jvm") version "1.8.20"
