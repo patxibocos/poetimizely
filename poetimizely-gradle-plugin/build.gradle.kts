@@ -1,12 +1,12 @@
 group = "io.github.patxibocos"
-version = "1.0.5"
+version = libs.versions.poetimizely.get()
 
 plugins {
-    `java-gradle-plugin`
-    id("com.gradle.plugin-publish") version "1.2.0"
     jacoco
-    id("com.diffplug.spotless") version "6.18.0"
-    kotlin("jvm") version "1.8.20"
+    `java-gradle-plugin`
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.gradle.plugin.publish)
+    alias(libs.plugins.spotless)
 }
 
 repositories {
@@ -15,10 +15,10 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.patxibocos:poetimizely-core:$version")
+    implementation(libs.poetimizely.core)
 
-    testImplementation("io.kotest:kotest-runner-junit5-jvm:5.5.5")
-    testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.5")
+    testImplementation(libs.kotest.runner.junit5)
+    testImplementation(libs.kotest.assertions.core.jvm)
     testImplementation(gradleTestKit())
 }
 
