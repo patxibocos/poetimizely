@@ -5,10 +5,10 @@ plugins {
     jacoco
     `maven-publish`
     signing
-    id("com.diffplug.spotless") version "6.18.0"
-    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
-    kotlin("jvm") version "1.8.20"
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.20"
+    alias(libs.plugins.spotless)
+    alias(libs.plugins.nexus.publish)
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 repositories {
@@ -16,20 +16,21 @@ repositories {
 }
 
 dependencies {
-    implementation("com.optimizely.ab:core-api:3.10.3")
-    implementation("com.squareup:kotlinpoet:1.13.0")
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
-    implementation("io.ktor:ktor-client-core:2.2.4")
-    implementation("io.ktor:ktor-client-content-negotiation:2.2.4")
-    implementation("io.ktor:ktor-client-cio:2.2.4")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.4")
-    implementation("com.pinterest.ktlint:ktlint-core:0.48.2")
-    implementation("com.pinterest.ktlint:ktlint-ruleset-standard:0.48.2")
+    implementation(libs.optimizely.core.api)
+    implementation(libs.kotlinpoet)
+    api(libs.kotlin.coroutines.core.jvm)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.serialization.json)
+    implementation(libs.kotlin.serialization.json)
+    implementation(libs.ktlint.core)
+    implementation(libs.ktlint.ruleset.standard)
 
-    testImplementation("com.github.tschuchortdev:kotlin-compile-testing:1.5.0")
-    testImplementation("io.kotest:kotest-runner-junit5-jvm:5.5.5")
-    testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.5")
-    testImplementation("io.mockk:mockk:1.13.4")
+    testImplementation(libs.kotlin.compile.testing)
+    testImplementation(libs.kotest.runner.junit5)
+    testImplementation(libs.kotest.assertions.core.jvm)
+    testImplementation(libs.mockk)
     testImplementation(gradleTestKit())
 }
 
@@ -41,12 +42,12 @@ spotless {
     kotlin {
         target("**/*.kt")
         targetExclude("$buildDir/**/*.kt", "bin/**/*.kt")
-        ktlint("0.48.2")
+        ktlint(libs.versions.ktlint.get())
     }
 
     kotlinGradle {
         target("*.gradle.kts")
-        ktlint("0.48.2")
+        ktlint(libs.versions.ktlint.get())
     }
 }
 
