@@ -30,12 +30,12 @@ spotless {
     kotlin {
         target("**/*.kt")
         targetExclude("$buildDir/**/*.kt", "bin/**/*.kt")
-        ktlint("0.48.2")
+        ktlint(libs.versions.ktlint.get())
     }
 
     kotlinGradle {
         target("*.gradle.kts")
-        ktlint("0.48.2")
+        ktlint(libs.versions.ktlint.get())
     }
 }
 
