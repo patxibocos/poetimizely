@@ -17,7 +17,7 @@ kotest-assertions-core-jvm = { module = "io.kotest:kotest-assertions-core-jvm", 
 kotlin-compile-testing = "com.github.tschuchortdev:kotlin-compile-testing:1.5.0"
 kotlin-coroutines-core-jvm = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
 kotlin-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0"
-kotlinpoet = "com.squareup:kotlinpoet:1.13.1"
+kotlinpoet = "com.squareup:kotlinpoet:1.13.2"
 ktlint-core = { module = "com.pinterest.ktlint:ktlint-core", version.ref = "ktlint" }
 ktlint-ruleset-standard = { module = "com.pinterest.ktlint:ktlint-ruleset-standard", version.ref = "ktlint" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
