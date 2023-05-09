@@ -16,3 +16,7 @@ fun ktLint(code: String): String {
         ),
     )
 }
+
+fun something(a: String): Boolean {
+    return a == "1" || true
+}
