@@ -16,7 +16,7 @@ kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5-jvm", version.
 kotest-assertions-core-jvm = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
 kotlin-compile-testing = "com.github.tschuchortdev:kotlin-compile-testing:1.5.0"
 kotlin-coroutines-core-jvm = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0"
-kotlin-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0"
+kotlin-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1"
 kotlinpoet = "com.squareup:kotlinpoet:1.13.2"
 ktlint-core = { module = "com.pinterest.ktlint:ktlint-core", version.ref = "ktlint" }
 ktlint-ruleset-standard = { module = "com.pinterest.ktlint:ktlint-ruleset-standard", version.ref = "ktlint" }
