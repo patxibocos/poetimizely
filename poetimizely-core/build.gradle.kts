@@ -25,6 +25,8 @@ dependencies {
     implementation(libs.ktor.serialization.json)
     implementation(libs.kotlin.serialization.json)
     implementation(libs.ktlint.core)
+    implementation(libs.ktlint.rule.engine)
+    implementation(libs.ktlint.rule.engine.core)
     implementation(libs.ktlint.ruleset.standard)
 
     testImplementation(libs.kotlin.compile.testing)
@@ -124,7 +126,7 @@ afterEvaluate {
 }
 
 nexusPublishing {
-    repositories {
+    this.repositories {
         sonatype {
             val sonatypeStagingProfileId: String? by project
             val sonatypeUsername: String? by project
