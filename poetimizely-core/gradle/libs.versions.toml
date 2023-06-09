@@ -11,7 +11,7 @@ nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version = "1.3.0
 spotless = { id = "com.diffplug.spotless", version = "6.19.0" }
 
 [libraries]
-optimizely-core-api = "com.optimizely.ab:core-api:3.10.3"
+optimizely-core-api = "com.optimizely.ab:core-api:3.10.4"
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotest" }
 kotest-assertions-core-jvm = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
 kotlin-compile-testing = "com.github.tschuchortdev:kotlin-compile-testing:1.5.0"
