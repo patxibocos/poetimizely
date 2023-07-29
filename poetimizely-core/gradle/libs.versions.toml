@@ -1,5 +1,6 @@
 [versions]
-ktlint = "0.49.1"
+ktlint = "0.50.0"
+ktlintcore = "0.49.1"
 ktor = "2.3.2"
 kotest = "5.6.2"
 kotlin = "1.9.0"
@@ -18,7 +19,7 @@ kotlin-compile-testing = "com.github.tschuchortdev:kotlin-compile-testing:1.5.0"
 kotlin-coroutines-core-jvm = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2"
 kotlin-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1"
 kotlinpoet = "com.squareup:kotlinpoet:1.14.2"
-ktlint-core = { module = "com.pinterest.ktlint:ktlint-core", version.ref = "ktlint" }
+ktlint-core = { module = "com.pinterest.ktlint:ktlint-core", version.ref = "ktlintcore" }
 ktlint-ruleset-standard = { module = "com.pinterest.ktlint:ktlint-ruleset-standard", version.ref = "ktlint" }
 ktlint-rule-engine = { module = "com.pinterest.ktlint:ktlint-rule-engine", version.ref = "ktlint" }
 ktlint-rule-engine-core = { module = "com.pinterest.ktlint:ktlint-rule-engine-core", version.ref = "ktlint" }
