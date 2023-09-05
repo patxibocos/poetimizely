@@ -2,7 +2,7 @@
 ktlint = "0.50.0"
 ktlintcore = "0.49.1"
 ktor = "2.3.4"
-kotest = "5.7.1"
+kotest = "5.7.2"
 kotlin = "1.9.10"
 
 [plugins]
