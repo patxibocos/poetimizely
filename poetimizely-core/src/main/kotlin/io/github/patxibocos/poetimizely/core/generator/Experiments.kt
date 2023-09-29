@@ -17,7 +17,10 @@ import io.github.patxibocos.poetimizely.core.optimizely.Experiment
 import io.github.patxibocos.poetimizely.core.optimizely.Variation
 import java.io.StringWriter
 
-internal fun generateExperimentsCode(optimizelyExperiments: List<Experiment>, packageName: String): String {
+internal fun generateExperimentsCode(
+    optimizelyExperiments: List<Experiment>,
+    packageName: String,
+): String {
     val baseVariationClassName = ClassName(packageName, "BaseVariation")
     val experimentClassName = ClassName(packageName, "Experiments")
 
