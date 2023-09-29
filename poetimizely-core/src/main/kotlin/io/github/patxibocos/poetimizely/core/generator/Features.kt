@@ -22,7 +22,10 @@ import java.io.StringWriter
  * is designed and documented in https://docs.google.com/document/d/1XJap6OKnzAM-C4GoL1Ubs2zKRzJSlIdzcvddOOE2Z7Q.
  */
 
-internal fun generateFeaturesCode(features: List<Feature>, packageName: String): String {
+internal fun generateFeaturesCode(
+    features: List<Feature>,
+    packageName: String,
+): String {
     val featureClassName = ClassName(packageName, "Features")
     val featureVariableClassName = ClassName(packageName, "FeatureVariable")
     return FileSpec.builder(packageName, "Features")
