@@ -23,6 +23,11 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.serialization.json)
+    implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable") {
+        version {
+            strictly("1.9.10")
+        }
+    }
     implementation(libs.kotlin.serialization.json)
     implementation(libs.ktlint.core)
     implementation(libs.ktlint.rule.engine)
@@ -43,7 +48,7 @@ kotlin {
 spotless {
     kotlin {
         target("**/*.kt")
-        targetExclude("$buildDir/**/*.kt", "bin/**/*.kt")
+        targetExclude("${layout.buildDirectory}/**/*.kt", "bin/**/*.kt")
         ktlint(libs.versions.ktlint.get())
     }
 
@@ -65,7 +70,7 @@ tasks.jacocoTestReport {
     reports {
         xml.required.set(true)
         csv.required.set(false)
-        xml.outputLocation.set(file("$buildDir/reports/jacoco/test/jacoco.xml"))
+        xml.outputLocation.set(file("${layout.buildDirectory}/reports/jacoco/test/jacoco.xml"))
     }
 }
 
