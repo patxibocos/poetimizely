@@ -1,5 +1,5 @@
 group = "io.github.patxibocos"
-version = "1.0.5"
+version = libs.versions.poetimizely.get()
 
 plugins {
     jacoco
