@@ -163,6 +163,7 @@ private fun featuresSealedClassTypeSpec(
                 typeSpecBuilder.addType(
                     TypeSpec.objectBuilder(feature.key.optimizelyFeatureKeyToObjectName())
                         .superclass(featureClassName)
+                        .addModifiers(KModifier.DATA)
                         .addSuperclassConstructorParameter("%S", feature.key).apply {
                             feature.variables.forEach { featureVariable ->
                                 addProperty(

@@ -101,14 +101,17 @@ private fun experimentsSealedClassTypeSpec(
                 .primaryConstructor(
                     FunSpec.constructorBuilder()
                         .addParameter("key", String::class)
-                        .addParameter("variations", ClassName("kotlin", "Array").parameterizedBy(variationTypeName))
+                        .addParameter(
+                            "variations",
+                            ClassName("kotlin.collections", "List").parameterizedBy(variationTypeName),
+                        )
                         .build(),
                 )
                 .addProperty(PropertySpec.builder("key", String::class).initializer("key").build())
                 .addProperty(
                     PropertySpec.builder(
                         "variations",
-                        ClassName("kotlin", "Array").parameterizedBy(variationTypeName),
+                        ClassName("kotlin.collections", "List").parameterizedBy(variationTypeName),
                     ).initializer("variations").build(),
                 )
         }
@@ -122,8 +125,9 @@ private fun experimentObjectTypeSpec(
     TypeSpec.objectBuilder(ClassName(packageName, optimizelyExperiment.key.optimizelyExperimentKeyToObjectName()))
         .apply {
             superclass(experimentClassName.parameterizedBy(variationsEnumClassName))
+            addModifiers(KModifier.DATA)
             addSuperclassConstructorParameter("%S", optimizelyExperiment.key)
-            addSuperclassConstructorParameter(CodeBlock.of("$variationsEnumClassName.values()"))
+            addSuperclassConstructorParameter(CodeBlock.of("$variationsEnumClassName.entries"))
         }.build()
 
 // This function builds the following:
