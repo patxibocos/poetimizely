@@ -16,7 +16,7 @@ application {
 
 dependencies {
     implementation("com.optimizely.ab:core-api:4.1.0")
-    implementation("com.optimizely.ab:core-httpclient-impl:4.0.0")
+    implementation("com.optimizely.ab:core-httpclient-impl:4.1.0")
     implementation(kotlin("stdlib"))
 }
 
