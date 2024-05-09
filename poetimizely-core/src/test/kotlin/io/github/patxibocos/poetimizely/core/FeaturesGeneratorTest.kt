@@ -16,7 +16,9 @@ import io.kotest.data.forAll
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldHave
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 
+@OptIn(ExperimentalCompilerApi::class)
 class FeaturesGeneratorTest : BehaviorSpec({
 
     given("A list of Optimizely features") {

@@ -14,7 +14,9 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.collections.shouldBeSingleton
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldHave
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 
+@OptIn(ExperimentalCompilerApi::class)
 class ExperimentsGeneratorTest : BehaviorSpec({
 
     given("An Optimizely experiment") {

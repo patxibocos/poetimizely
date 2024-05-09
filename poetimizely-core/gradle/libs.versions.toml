@@ -16,7 +16,7 @@ spotless = { id = "com.diffplug.spotless", version = "6.25.0" }
 optimizely-core-api = "com.optimizely.ab:core-api:4.1.0"
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotest" }
 kotest-assertions-core-jvm = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
-kotlin-compile-testing = "com.github.tschuchortdev:kotlin-compile-testing:1.5.0"
+kotlin-compile-testing = "dev.zacsweers.kctfork:core:0.4.1"
 kotlin-coroutines-core-jvm = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0"
 kotlin-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3"
 kotlinpoet = "com.squareup:kotlinpoet:1.16.0"

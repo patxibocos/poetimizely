@@ -23,11 +23,6 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.serialization.json)
-    implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable") {
-        version {
-            strictly("1.9.10")
-        }
-    }
     implementation(libs.kotlin.serialization.json)
     implementation(libs.ktlint.core)
     implementation(libs.ktlint.rule.engine)
