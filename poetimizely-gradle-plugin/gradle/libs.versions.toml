@@ -1,7 +1,7 @@
 [versions]
 ktlint = "0.48.2"
 ktor = "2.2.4"
-kotest = "5.8.1"
+kotest = "5.9.0"
 kotlin = "1.9.24"
 poetimizely = "1.0.6"
 
