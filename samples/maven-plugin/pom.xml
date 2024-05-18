@@ -36,7 +36,7 @@
             <plugin>
                 <groupId>io.github.patxibocos</groupId>
                 <artifactId>poetimizely-maven-plugin</artifactId>
-                <version>1.0.6</version>
+                <version>1.0.7</version>
                 <configuration>
                     <optimizelyProjectId>${env.OPTIMIZELY_PROJECT_ID}</optimizelyProjectId>
                     <optimizelyToken>${env.OPTIMIZELY_TOKEN}</optimizelyToken>
