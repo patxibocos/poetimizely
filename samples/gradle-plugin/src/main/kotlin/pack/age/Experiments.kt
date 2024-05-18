@@ -4,7 +4,6 @@ package pack.age
 
 import com.optimizely.ab.Optimizely
 import kotlin.Any
-import kotlin.Array
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.List
@@ -14,8 +13,7 @@ public interface BaseVariation {
     public val key: String
 }
 
-public fun getAllExperiments(): List<Experiments<out BaseVariation>> =
-    listOf(Experiments.MyFeatureTest)
+public fun getAllExperiments(): List<Experiments<out BaseVariation>> = listOf(Experiments.MyFeatureTest)
 
 public fun <V : BaseVariation> Optimizely.getVariationForExperiment(
     experiment: Experiments<V>,
@@ -28,22 +26,22 @@ public fun <V : BaseVariation> Optimizely.getVariationForExperiment(
 
 public enum class MyFeatureTestVariations : BaseVariation {
     VARIATION_1 {
-        public override val key: String = "variation_1"
+        override val key: String = "variation_1"
     },
     VARIATION_2 {
-        public override val key: String = "variation_2"
+        override val key: String = "variation_2"
     },
     VARIATION_3 {
-        public override val key: String = "variation_3"
+        override val key: String = "variation_3"
     },
 }
 
 public sealed class Experiments<V : BaseVariation>(
     public val key: String,
-    public val variations: Array<V>,
+    public val variations: List<V>,
 ) {
-    public object MyFeatureTest : Experiments<MyFeatureTestVariations>(
+    public data object MyFeatureTest : Experiments<MyFeatureTestVariations>(
         "my_feature_test",
-        pack.age.MyFeatureTestVariations.values(),
+        pack.age.MyFeatureTestVariations.entries,
     )
 }

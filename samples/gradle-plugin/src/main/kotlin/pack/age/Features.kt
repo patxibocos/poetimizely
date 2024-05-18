@@ -20,7 +20,7 @@ public class FeatureVariable<T>(
 public sealed class Features(
     public val key: String,
 ) {
-    public object MyFeature : Features("my_feature")
+    public data object MyFeature : Features("my_feature")
 }
 
 public fun getAllFeatures(): List<Features> = listOf(Features.MyFeature)
@@ -35,42 +35,46 @@ public fun Optimizely.getFeatureVariable(
     variable: FeatureVariable<Boolean>,
     userId: String,
     attributes: Map<String, Any> = emptyMap(),
-): Boolean? = this.getFeatureVariableBoolean(
-    variable.featureKey,
-    variable.variableKey,
-    userId,
-    attributes,
-)
+): Boolean? =
+    this.getFeatureVariableBoolean(
+        variable.featureKey,
+        variable.variableKey,
+        userId,
+        attributes,
+    )
 
 public fun Optimizely.getFeatureVariable(
     variable: FeatureVariable<String>,
     userId: String,
     attributes: Map<String, Any> = emptyMap(),
-): String? = this.getFeatureVariableString(
-    variable.featureKey,
-    variable.variableKey,
-    userId,
-    attributes,
-)
+): String? =
+    this.getFeatureVariableString(
+        variable.featureKey,
+        variable.variableKey,
+        userId,
+        attributes,
+    )
 
 public fun Optimizely.getFeatureVariable(
     variable: FeatureVariable<Double>,
     userId: String,
     attributes: Map<String, Any> = emptyMap(),
-): Double? = this.getFeatureVariableDouble(
-    variable.featureKey,
-    variable.variableKey,
-    userId,
-    attributes,
-)
+): Double? =
+    this.getFeatureVariableDouble(
+        variable.featureKey,
+        variable.variableKey,
+        userId,
+        attributes,
+    )
 
 public fun Optimizely.getFeatureVariable(
     variable: FeatureVariable<Int>,
     userId: String,
     attributes: Map<String, Any> = emptyMap(),
-): Int? = this.getFeatureVariableInteger(
-    variable.featureKey,
-    variable.variableKey,
-    userId,
-    attributes,
-)
+): Int? =
+    this.getFeatureVariableInteger(
+        variable.featureKey,
+        variable.variableKey,
+        userId,
+        attributes,
+    )
