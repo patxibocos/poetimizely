@@ -19,7 +19,7 @@ kotest-assertions-core-jvm = { module = "io.kotest:kotest-assertions-core-jvm", 
 kotlin-compile-testing = "dev.zacsweers.kctfork:core:0.4.1"
 kotlin-coroutines-core-jvm = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1"
 kotlin-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3"
-kotlinpoet = "com.squareup:kotlinpoet:1.16.0"
+kotlinpoet = "com.squareup:kotlinpoet:1.17.0"
 ktlint-core = { module = "com.pinterest.ktlint:ktlint-core", version.ref = "ktlintcore" }
 ktlint-ruleset-standard = { module = "com.pinterest.ktlint:ktlint-ruleset-standard", version.ref = "ktlint" }
 ktlint-rule-engine = { module = "com.pinterest.ktlint:ktlint-rule-engine", version.ref = "ktlint" }
