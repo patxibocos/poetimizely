@@ -24,11 +24,15 @@ internal fun generateExperimentsCode(
     val baseVariationClassName = ClassName(packageName, "BaseVariation")
     val experimentClassName = ClassName(packageName, "Experiments")
 
-    return FileSpec.builder(packageName, "Experiments")
+    return FileSpec
+        .builder(packageName, "Experiments")
         .apply {
             addAnnotation(
-                AnnotationSpec.builder(Suppress::class).useSiteTarget(AnnotationSpec.UseSiteTarget.FILE)
-                    .addMember("%S, %S", "RedundantVisibilityModifier", "Unused").build(),
+                AnnotationSpec
+                    .builder(Suppress::class)
+                    .useSiteTarget(AnnotationSpec.UseSiteTarget.FILE)
+                    .addMember("%S, %S", "RedundantVisibilityModifier", "Unused")
+                    .build(),
             )
             val experimentSealedClassTypeSpecBuilder =
                 experimentsSealedClassTypeSpec(baseVariationClassName, experimentClassName)
@@ -61,10 +65,13 @@ internal fun generateExperimentsCode(
                 )
             }
             addType(experimentSealedClassTypeSpecBuilder.build())
-        }.build().run {
-            StringWriter().also {
-                this.writeTo(it)
-            }.toString().let(::ktLint)
+        }.build()
+        .run {
+            StringWriter()
+                .also {
+                    this.writeTo(it)
+                }.toString()
+                .let(::ktLint)
         }
 }
 
@@ -73,16 +80,21 @@ private fun experimentVariationsEnumTypeSpec(
     baseVariationClassName: ClassName,
     optimizelyVariations: Collection<Variation>,
 ): TypeSpec =
-    TypeSpec.enumBuilder(variationsEnumClassName)
-        .addSuperinterface(baseVariationClassName).apply {
+    TypeSpec
+        .enumBuilder(variationsEnumClassName)
+        .addSuperinterface(baseVariationClassName)
+        .apply {
             optimizelyVariations.forEach { variation ->
                 addEnumConstant(
                     variation.key.optimizelyExperimentKeyToVariationEnumConstant(),
-                    TypeSpec.anonymousClassBuilder().addProperty(
-                        PropertySpec.builder("key", String::class, KModifier.OVERRIDE)
-                            .initializer("%S", variation.key)
-                            .build(),
-                    ).build(),
+                    TypeSpec
+                        .anonymousClassBuilder()
+                        .addProperty(
+                            PropertySpec
+                                .builder("key", String::class, KModifier.OVERRIDE)
+                                .initializer("%S", variation.key)
+                                .build(),
+                        ).build(),
                 ).build()
             }
         }.build()
@@ -96,23 +108,26 @@ private fun experimentsSealedClassTypeSpec(
 ): TypeSpec.Builder =
     TypeVariableName("V", baseVariationClassName)
         .let { variationTypeName ->
-            TypeSpec.classBuilder(experimentsClassName).addModifiers(KModifier.SEALED)
+            TypeSpec
+                .classBuilder(experimentsClassName)
+                .addModifiers(KModifier.SEALED)
                 .addTypeVariable(variationTypeName)
                 .primaryConstructor(
-                    FunSpec.constructorBuilder()
+                    FunSpec
+                        .constructorBuilder()
                         .addParameter("key", String::class)
                         .addParameter(
                             "variations",
                             ClassName("kotlin.collections", "List").parameterizedBy(variationTypeName),
-                        )
-                        .build(),
-                )
-                .addProperty(PropertySpec.builder("key", String::class).initializer("key").build())
+                        ).build(),
+                ).addProperty(PropertySpec.builder("key", String::class).initializer("key").build())
                 .addProperty(
-                    PropertySpec.builder(
-                        "variations",
-                        ClassName("kotlin.collections", "List").parameterizedBy(variationTypeName),
-                    ).initializer("variations").build(),
+                    PropertySpec
+                        .builder(
+                            "variations",
+                            ClassName("kotlin.collections", "List").parameterizedBy(variationTypeName),
+                        ).initializer("variations")
+                        .build(),
                 )
         }
 
@@ -122,7 +137,8 @@ private fun experimentObjectTypeSpec(
     variationsEnumClassName: ClassName,
     optimizelyExperiment: Experiment,
 ): TypeSpec =
-    TypeSpec.objectBuilder(ClassName(packageName, optimizelyExperiment.key.optimizelyExperimentKeyToObjectName()))
+    TypeSpec
+        .objectBuilder(ClassName(packageName, optimizelyExperiment.key.optimizelyExperimentKeyToObjectName()))
         .apply {
             superclass(experimentClassName.parameterizedBy(variationsEnumClassName))
             addModifiers(KModifier.DATA)
@@ -137,41 +153,41 @@ private fun getAllExperimentsFunSpec(
     baseExperimentClassName: ClassName,
     baseVariationClassName: ClassName,
 ): FunSpec =
-    FunSpec.builder("getAllExperiments")
+    FunSpec
+        .builder("getAllExperiments")
         .returns(
             ClassName("kotlin.collections", "List").parameterizedBy(
                 baseExperimentClassName.parameterizedBy(WildcardTypeName.producerOf(baseVariationClassName)),
             ),
-        )
-        .addStatement(
+        ).addStatement(
             """return listOf(${
                 optimizelyExperiments.joinToString {
                     "Experiments.${it.key.optimizelyExperimentKeyToObjectName()}"
                 }
             })""".trimIndent(),
-        )
-        .build()
+        ).build()
 
 private fun getVariationForExperimentFunSpec(
     baseVariationClassName: ClassName,
     baseExperimentClassName: ClassName,
 ): FunSpec =
     TypeVariableName("V", baseVariationClassName).let { variationTypeName ->
-        FunSpec.builder("getVariationForExperiment")
+        FunSpec
+            .builder("getVariationForExperiment")
             .receiver(Optimizely::class)
             .addTypeVariable(variationTypeName)
             .addParameter(
                 "experiment",
                 baseExperimentClassName.parameterizedBy(variationTypeName),
-            )
-            .addParameter("userId", String::class)
+            ).addParameter("userId", String::class)
             .addParameter(
-                ParameterSpec.Companion.builder(
-                    "attributes",
-                    Map::class.parameterizedBy(String::class, Any::class),
-                ).defaultValue(CodeBlock.of("emptyMap()")).build(),
-            )
-            .returns(variationTypeName.copy(nullable = true))
+                ParameterSpec.Companion
+                    .builder(
+                        "attributes",
+                        Map::class.parameterizedBy(String::class, Any::class),
+                    ).defaultValue(CodeBlock.of("emptyMap()"))
+                    .build(),
+            ).returns(variationTypeName.copy(nullable = true))
             .addStatement("val variation = this.activate(experiment.key, userId, attributes)")
             .addStatement("return experiment.variations.find { it.key == variation?.key }")
             .build()

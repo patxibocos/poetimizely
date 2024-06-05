@@ -12,28 +12,28 @@ import kotlinx.serialization.json.Json
 
 internal fun buildExperimentsService(httpClient: HttpClient): ExperimentsService =
     object : ExperimentsService {
-        override suspend fun listExperiments(projectId: Long): List<Experiment> {
-            return httpClient.get("experiments") {
-                url {
-                    parameters.append("project_id", projectId.toString())
-                }
-            }.body()
-        }
+        override suspend fun listExperiments(projectId: Long): List<Experiment> =
+            httpClient
+                .get("experiments") {
+                    url {
+                        parameters.append("project_id", projectId.toString())
+                    }
+                }.body()
     }
 
 internal fun buildFeaturesService(httpClient: HttpClient): FeaturesService =
     object : FeaturesService {
-        override suspend fun listFeatures(projectId: Long): List<Feature> {
-            return httpClient.get("features") {
-                url {
-                    parameters.append("project_id", projectId.toString())
-                }
-            }.body()
-        }
+        override suspend fun listFeatures(projectId: Long): List<Feature> =
+            httpClient
+                .get("features") {
+                    url {
+                        parameters.append("project_id", projectId.toString())
+                    }
+                }.body()
     }
 
-internal fun authenticatedHttpClient(optimizelyToken: String): HttpClient {
-    return HttpClient(CIO) {
+internal fun authenticatedHttpClient(optimizelyToken: String): HttpClient =
+    HttpClient(CIO) {
         install(ContentNegotiation) {
             json(
                 Json {
@@ -46,4 +46,3 @@ internal fun authenticatedHttpClient(optimizelyToken: String): HttpClient {
             header("Authorization", "Bearer $optimizelyToken")
         }
     }
-}
