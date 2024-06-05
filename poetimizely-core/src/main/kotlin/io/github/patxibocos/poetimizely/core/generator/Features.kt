@@ -28,12 +28,15 @@ internal fun generateFeaturesCode(
 ): String {
     val featureClassName = ClassName(packageName, "Features")
     val featureVariableClassName = ClassName(packageName, "FeatureVariable")
-    return FileSpec.builder(packageName, "Features")
+    return FileSpec
+        .builder(packageName, "Features")
         .addAnnotation(
-            AnnotationSpec.builder(Suppress::class).useSiteTarget(AnnotationSpec.UseSiteTarget.FILE)
-                .addMember("%S, %S", "RedundantVisibilityModifier", "Unused").build(),
-        )
-        .addType(featureVariableTypeSpec(featureVariableClassName))
+            AnnotationSpec
+                .builder(Suppress::class)
+                .useSiteTarget(AnnotationSpec.UseSiteTarget.FILE)
+                .addMember("%S, %S", "RedundantVisibilityModifier", "Unused")
+                .build(),
+        ).addType(featureVariableTypeSpec(featureVariableClassName))
         .addType(featuresSealedClassTypeSpec(features, featureClassName, featureVariableClassName))
         .addFunction(getAllFeaturesFunSpec(features, featureClassName))
         .addFunction(isFeatureEnabledFunSpec(featureClassName))
@@ -41,20 +44,27 @@ internal fun generateFeaturesCode(
         .addFunction(getFeatureVariableStringFunSpec(featureVariableClassName))
         .addFunction(getFeatureVariableDoubleFunSpec(featureVariableClassName))
         .addFunction(getFeatureVariableIntFunSpec(featureVariableClassName))
-        .build().run {
-            StringWriter().also {
-                this.writeTo(it)
-            }.toString().let(::ktLint)
+        .build()
+        .run {
+            StringWriter()
+                .also {
+                    this.writeTo(it)
+                }.toString()
+                .let(::ktLint)
         }
 }
 
 private fun featureVariableTypeSpec(featureVariableClassName: ClassName): TypeSpec =
-    TypeSpec.classBuilder(featureVariableClassName).addTypeVariable(TypeVariableName("T"))
+    TypeSpec
+        .classBuilder(featureVariableClassName)
+        .addTypeVariable(TypeVariableName("T"))
         .primaryConstructor(
-            FunSpec.constructorBuilder().addParameter("featureKey", String::class)
-                .addParameter("variableKey", String::class).build(),
-        )
-        .addProperty(PropertySpec.builder("featureKey", String::class).initializer("featureKey").build())
+            FunSpec
+                .constructorBuilder()
+                .addParameter("featureKey", String::class)
+                .addParameter("variableKey", String::class)
+                .build(),
+        ).addProperty(PropertySpec.builder("featureKey", String::class).initializer("featureKey").build())
         .addProperty(PropertySpec.builder("variableKey", String::class).initializer("variableKey").build())
         .build()
 
@@ -68,77 +78,87 @@ private fun featureVariableTypeSpec(featureVariableClassName: ClassName): TypeSp
  * ): Boolean = this.isFeatureEnabled(feature.key, userId, attributes)
  */
 private fun isFeatureEnabledFunSpec(featureClassName: ClassName): FunSpec =
-    FunSpec.builder("isFeatureEnabled")
+    FunSpec
+        .builder("isFeatureEnabled")
         .receiver(Optimizely::class)
         .addParameter("feature", featureClassName)
         .addParameter("userId", String::class)
         .addParameter(
-            ParameterSpec.Companion.builder(
-                "attributes",
-                Map::class.parameterizedBy(String::class, Any::class),
-            ).defaultValue(CodeBlock.of("emptyMap()")).build(),
-        )
-        .returns(Boolean::class)
+            ParameterSpec.Companion
+                .builder(
+                    "attributes",
+                    Map::class.parameterizedBy(String::class, Any::class),
+                ).defaultValue(CodeBlock.of("emptyMap()"))
+                .build(),
+        ).returns(Boolean::class)
         .addStatement("return this.isFeatureEnabled(feature.key, userId, attributes)")
         .build()
 
 private fun getFeatureVariableBooleanFunSpec(featureVariableClassName: ClassName): FunSpec =
-    FunSpec.builder("getFeatureVariable")
+    FunSpec
+        .builder("getFeatureVariable")
         .receiver(Optimizely::class)
         .addParameter("variable", featureVariableClassName.parameterizedBy(Boolean::class.asTypeName()))
         .addParameter("userId", String::class)
         .addParameter(
-            ParameterSpec.Companion.builder(
-                "attributes",
-                Map::class.parameterizedBy(String::class, Any::class),
-            ).defaultValue(CodeBlock.of("emptyMap()")).build(),
-        )
-        .returns(Boolean::class.asTypeName().copy(nullable = true))
+            ParameterSpec.Companion
+                .builder(
+                    "attributes",
+                    Map::class.parameterizedBy(String::class, Any::class),
+                ).defaultValue(CodeBlock.of("emptyMap()"))
+                .build(),
+        ).returns(Boolean::class.asTypeName().copy(nullable = true))
         .addStatement("return this.getFeatureVariableBoolean(variable.featureKey, variable.variableKey, userId, attributes)")
         .build()
 
 private fun getFeatureVariableStringFunSpec(featureVariableClassName: ClassName): FunSpec =
-    FunSpec.builder("getFeatureVariable")
+    FunSpec
+        .builder("getFeatureVariable")
         .receiver(Optimizely::class)
         .addParameter("variable", featureVariableClassName.parameterizedBy(String::class.asTypeName()))
         .addParameter("userId", String::class)
         .addParameter(
-            ParameterSpec.Companion.builder(
-                "attributes",
-                Map::class.parameterizedBy(String::class, Any::class),
-            ).defaultValue(CodeBlock.of("emptyMap()")).build(),
-        )
-        .returns(String::class.asTypeName().copy(nullable = true))
+            ParameterSpec.Companion
+                .builder(
+                    "attributes",
+                    Map::class.parameterizedBy(String::class, Any::class),
+                ).defaultValue(CodeBlock.of("emptyMap()"))
+                .build(),
+        ).returns(String::class.asTypeName().copy(nullable = true))
         .addStatement("return this.getFeatureVariableString(variable.featureKey, variable.variableKey, userId, attributes)")
         .build()
 
 private fun getFeatureVariableDoubleFunSpec(featureVariableClassName: ClassName): FunSpec =
-    FunSpec.builder("getFeatureVariable")
+    FunSpec
+        .builder("getFeatureVariable")
         .receiver(Optimizely::class)
         .addParameter("variable", featureVariableClassName.parameterizedBy(Double::class.asTypeName()))
         .addParameter("userId", String::class)
         .addParameter(
-            ParameterSpec.Companion.builder(
-                "attributes",
-                Map::class.parameterizedBy(String::class, Any::class),
-            ).defaultValue(CodeBlock.of("emptyMap()")).build(),
-        )
-        .returns(Double::class.asTypeName().copy(nullable = true))
+            ParameterSpec.Companion
+                .builder(
+                    "attributes",
+                    Map::class.parameterizedBy(String::class, Any::class),
+                ).defaultValue(CodeBlock.of("emptyMap()"))
+                .build(),
+        ).returns(Double::class.asTypeName().copy(nullable = true))
         .addStatement("return this.getFeatureVariableDouble(variable.featureKey, variable.variableKey, userId, attributes)")
         .build()
 
 private fun getFeatureVariableIntFunSpec(featureVariableClassName: ClassName): FunSpec =
-    FunSpec.builder("getFeatureVariable")
+    FunSpec
+        .builder("getFeatureVariable")
         .receiver(Optimizely::class)
         .addParameter("variable", featureVariableClassName.parameterizedBy(Int::class.asTypeName()))
         .addParameter("userId", String::class)
         .addParameter(
-            ParameterSpec.Companion.builder(
-                "attributes",
-                Map::class.parameterizedBy(String::class, Any::class),
-            ).defaultValue(CodeBlock.of("emptyMap()")).build(),
-        )
-        .returns(Int::class.asTypeName().copy(nullable = true))
+            ParameterSpec.Companion
+                .builder(
+                    "attributes",
+                    Map::class.parameterizedBy(String::class, Any::class),
+                ).defaultValue(CodeBlock.of("emptyMap()"))
+                .build(),
+        ).returns(Int::class.asTypeName().copy(nullable = true))
         .addStatement("return this.getFeatureVariableInteger(variable.featureKey, variable.variableKey, userId, attributes)")
         .build()
 
@@ -155,16 +175,20 @@ private fun featuresSealedClassTypeSpec(
     featureClassName: ClassName,
     featureVariableClassName: ClassName,
 ): TypeSpec =
-    TypeSpec.classBuilder(featureClassName).addModifiers(KModifier.SEALED)
+    TypeSpec
+        .classBuilder(featureClassName)
+        .addModifiers(KModifier.SEALED)
         .primaryConstructor(FunSpec.constructorBuilder().addParameter("key", String::class).build())
         .addProperty(PropertySpec.builder("key", String::class).initializer("key").build())
         .also { typeSpecBuilder ->
             features.forEach { feature ->
                 typeSpecBuilder.addType(
-                    TypeSpec.objectBuilder(feature.key.optimizelyFeatureKeyToObjectName())
+                    TypeSpec
+                        .objectBuilder(feature.key.optimizelyFeatureKeyToObjectName())
                         .superclass(featureClassName)
                         .addModifiers(KModifier.DATA)
-                        .addSuperclassConstructorParameter("%S", feature.key).apply {
+                        .addSuperclassConstructorParameter("%S", feature.key)
+                        .apply {
                             feature.variables.forEach { featureVariable ->
                                 addProperty(
                                     featureVariablePropertySpec(
@@ -185,45 +209,45 @@ private fun getAllFeaturesFunSpec(
     optimizelyFeatures: List<Feature>,
     baseFeatureClassName: ClassName,
 ): FunSpec =
-    FunSpec.builder("getAllFeatures")
+    FunSpec
+        .builder("getAllFeatures")
         .returns(
             ClassName("kotlin.collections", "List").parameterizedBy(
                 baseFeatureClassName,
             ),
-        )
-        .addStatement(
+        ).addStatement(
             """return listOf(${
                 optimizelyFeatures.joinToString {
                     "Features.${it.key.optimizelyFeatureKeyToObjectName()}"
                 }
             })""".trimIndent(),
-        )
-        .build()
+        ).build()
 
 private fun featureVariablePropertySpec(
     feature: Feature,
     featureVariable: Variable,
     featureVariableClassName: ClassName,
 ): PropertySpec =
-    PropertySpec.builder(
-        featureVariable.key.optimizelyFeatureVariableKeyToPropertyName(),
-        featureVariableClassName.parameterizedBy(
-            when (featureVariable.type) {
-                "boolean" -> Boolean::class.asTypeName()
-                "string" -> String()::class.asTypeName()
-                "double" -> Double::class.asTypeName()
-                "integer" -> Int::class.asTypeName()
-                else -> throw IllegalArgumentException("Unexpected feature variable type ${featureVariable.type}")
-            },
-        ),
-    ).initializer(
-        CodeBlock.of(
-            "%T(%S, %S)",
-            featureVariableClassName,
-            feature.key,
-            featureVariable.key,
-        ),
-    ).build()
+    PropertySpec
+        .builder(
+            featureVariable.key.optimizelyFeatureVariableKeyToPropertyName(),
+            featureVariableClassName.parameterizedBy(
+                when (featureVariable.type) {
+                    "boolean" -> Boolean::class.asTypeName()
+                    "string" -> String()::class.asTypeName()
+                    "double" -> Double::class.asTypeName()
+                    "integer" -> Int::class.asTypeName()
+                    else -> throw IllegalArgumentException("Unexpected feature variable type ${featureVariable.type}")
+                },
+            ),
+        ).initializer(
+            CodeBlock.of(
+                "%T(%S, %S)",
+                featureVariableClassName,
+                feature.key,
+                featureVariable.key,
+            ),
+        ).build()
 
 /**
  * According to the Optimizely Docs (https://docs.developers.optimizely.com/full-stack/docs/create-feature-flags)
@@ -243,5 +267,6 @@ private fun String.optimizelyFeatureKeyToObjectName(): String =
     }
 
 private fun String.optimizelyFeatureVariableKeyToPropertyName(): String =
-    split("-", "_").joinToString("") { it.trim().replaceFirstChar(Char::uppercaseChar) }
+    split("-", "_")
+        .joinToString("") { it.trim().replaceFirstChar(Char::uppercaseChar) }
         .replaceFirstChar(Char::lowercaseChar)
