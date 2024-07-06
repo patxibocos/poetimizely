@@ -4,7 +4,7 @@ ktlintcore = "0.49.1"
 ktor = "2.3.12"
 kotest = "5.9.1"
 kotlin = "2.0.0"
-poetimizely = "1.0.7"
+poetimizely = "1.0.8"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
