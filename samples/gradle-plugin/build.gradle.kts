@@ -2,7 +2,7 @@ group = "io.github.patxibocos"
 
 plugins {
     application
-    kotlin("jvm") version "2.1.20"
+    kotlin("jvm") version "2.1.21"
     id("io.github.patxibocos.poetimizely") version "1.0.8"
 }
 
