@@ -208,7 +208,8 @@ private fun String.optimizelyExperimentKeyToVariationEnumName(): String =
         "_",
     ).joinToString("") {
         it.mapIndexed { index, c -> if (index == 0) c.uppercaseChar() else c.lowercaseChar() }.joinToString("")
-    } + "Variations"
+    } +
+        "Variations"
 
 private fun String.optimizelyExperimentKeyToVariationEnumConstant(): String =
     split("-", "_").joinToString("_") { it.map { c -> c.uppercaseChar() }.joinToString("") }
