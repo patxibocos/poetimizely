@@ -41,7 +41,7 @@
         <maven.version>3.9.11</maven.version>
         <kotlin.version>2.2.0</kotlin.version>
         <kotlin.compiler.jvmTarget>11</kotlin.compiler.jvmTarget>
-        <junit-jupiter.version>5.13.3</junit-jupiter.version>
+        <junit-jupiter.version>5.13.4</junit-jupiter.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
