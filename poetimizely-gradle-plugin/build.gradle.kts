@@ -23,13 +23,13 @@ dependencies {
 }
 
 kotlin {
-    jvmToolchain(11)
+    jvmToolchain(17)
 }
 
 spotless {
     kotlin {
         target("**/*.kt")
-        targetExclude("$buildDir/**/*.kt", "bin/**/*.kt")
+        targetExclude("${layout.buildDirectory}/**/*.kt", "bin/**/*.kt")
         ktlint(libs.versions.ktlint.get())
     }
 
@@ -51,7 +51,7 @@ tasks.jacocoTestReport {
     reports {
         xml.required.set(true)
         csv.required.set(false)
-        xml.outputLocation.set(file("$buildDir/reports/jacoco/test/jacoco.xml"))
+        xml.outputLocation.set(file("${layout.buildDirectory}/reports/jacoco/test/jacoco.xml"))
     }
 }
 
