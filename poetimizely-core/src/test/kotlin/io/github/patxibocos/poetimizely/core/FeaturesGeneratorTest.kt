@@ -12,8 +12,7 @@ import io.github.patxibocos.poetimizely.matchers.shouldBeKotlinObject
 import io.github.patxibocos.poetimizely.matchers.shouldHaveField
 import io.github.patxibocos.poetimizely.matchers.shouldHaveFieldWithValue
 import io.kotest.core.spec.style.BehaviorSpec
-import io.kotest.data.forAll
-import io.kotest.data.row
+import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldHave
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
@@ -44,21 +43,32 @@ class FeaturesGeneratorTest :
                     then("Generated code compiles") {
                         compilationResult.exitCode shouldBe KotlinCompilation.ExitCode.OK
                     }
-                    then("Kotlin objects for features and variables exist with their properties") {
-                        forAll(
-                            row("new_checkout_page", "NewCheckoutPage", "variable_key_1", "variableKey1"),
-                            row("new_login_page", "NewLoginPage", "variable_key_2", "variableKey2"),
-                            row("new_sign_up_page", "NewSignUpPage", "variable_key_3", "variableKey3"),
-                            row("new_onboarding_page", "NewOnboardingPage", "variable_key_4", "variableKey4"),
-                        ) { featureKey, generatedFeatureClassName, variableKey, generatedFeatureVariableName ->
+                    and("Kotlin objects for features and variables exist with their properties") {
+                        data class FeatureTestCase(
+                            val featureKey: String,
+                            val generatedFeatureClassName: String,
+                            val variableKey: String,
+                            val generatedFeatureVariableName: String,
+                        )
+                        withData(
+                            FeatureTestCase("new_checkout_page", "NewCheckoutPage", "variable_key_1", "variableKey1"),
+                            FeatureTestCase("new_login_page", "NewLoginPage", "variable_key_2", "variableKey2"),
+                            FeatureTestCase("new_sign_up_page", "NewSignUpPage", "variable_key_3", "variableKey3"),
+                            FeatureTestCase(
+                                "new_onboarding_page",
+                                "NewOnboardingPage",
+                                "variable_key_4",
+                                "variableKey4",
+                            ),
+                        ) { testCase ->
                             val feature =
                                 compilationResult.classLoader
-                                    .loadClass("$packageName.Features\$$generatedFeatureClassName")
+                                    .loadClass("$packageName.Features$${testCase.generatedFeatureClassName}")
                                     .shouldBeKotlinObject()
-                            feature.parentClassShouldHaveFieldWithValue("key", featureKey)
-                            feature.shouldHaveField(generatedFeatureVariableName) { featureVariable ->
-                                featureVariable.shouldHaveFieldWithValue("featureKey", featureKey)
-                                featureVariable.shouldHaveFieldWithValue("variableKey", variableKey)
+                            feature.parentClassShouldHaveFieldWithValue("key", testCase.featureKey)
+                            feature.shouldHaveField(testCase.generatedFeatureVariableName) { featureVariable ->
+                                featureVariable.shouldHaveFieldWithValue("featureKey", testCase.featureKey)
+                                featureVariable.shouldHaveFieldWithValue("variableKey", testCase.variableKey)
                             }
                         }
                     }
@@ -91,7 +101,8 @@ class FeaturesGeneratorTest :
                                 String::class.java,
                                 Map::class.java,
                             )
-                        val featureVariableClass = compilationResult.classLoader.loadClass("$packageName.FeatureVariable")
+                        val featureVariableClass =
+                            compilationResult.classLoader.loadClass("$packageName.FeatureVariable")
                         listOf(
                             Boolean::class.javaObjectType,
                             String::class.java,
