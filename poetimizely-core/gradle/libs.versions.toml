@@ -2,7 +2,7 @@
 ktlint = "1.8.0"
 ktlintcore = "0.49.1"
 ktor = "3.3.2"
-kotest = "6.0.4"
+kotest = "6.0.5"
 kotlin = "2.2.21"
 poetimizely = "1.0.8"
 
