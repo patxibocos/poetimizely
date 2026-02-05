@@ -3,7 +3,7 @@ ktlint = "1.8.0"
 ktlintcore = "0.49.1"
 ktor = "3.4.0"
 kotest = "6.1.3"
-kotlin = "2.3.0"
+kotlin = "2.3.10"
 poetimizely = "1.0.8"
 
 [plugins]
