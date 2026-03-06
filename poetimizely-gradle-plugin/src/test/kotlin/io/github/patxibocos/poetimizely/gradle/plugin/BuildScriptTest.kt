@@ -8,33 +8,36 @@ import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import java.nio.file.Files
 
-class BuildScriptTest : BehaviorSpec({
+class BuildScriptTest :
+    BehaviorSpec({
 
-    given("A project directory") {
-        val projectDir = Files.createTempDirectory("")
-        val buildScript = projectDir.resolve("build.gradle.kts").toFile()
-        and("A build script applying the plugin without configuration") {
-            buildScript.writeText(
-                """
-                plugins { 
-                    kotlin("jvm") version "2.2.0"
-                    id("io.github.patxibocos.poetimizely")
-                }
-                """.trimIndent(),
-            )
-            `when`("Poetimize task runs") {
-                val buildResult = GradleRunner.create()
-                    .withProjectDir(projectDir.toFile())
-                    .withPluginClasspath()
-                    .withArguments(":poetimize")
-                    .build()
-                then("Generator tasks runs but it skips as the configuration is missing") {
-                    val poetimizeBuildTask = buildResult.tasks.find { it.path == ":poetimize" }
-                    poetimizeBuildTask shouldNotBe null
-                    poetimizeBuildTask?.outcome shouldBe TaskOutcome.SUCCESS
-                    buildResult.output.shouldContainIgnoringCase("skipping")
+        given("A project directory") {
+            val projectDir = Files.createTempDirectory("")
+            val buildScript = projectDir.resolve("build.gradle.kts").toFile()
+            and("A build script applying the plugin without configuration") {
+                buildScript.writeText(
+                    """
+                    plugins { 
+                        kotlin("jvm") version "2.2.0"
+                        id("io.github.patxibocos.poetimizely")
+                    }
+                    """.trimIndent(),
+                )
+                `when`("Poetimize task runs") {
+                    val buildResult =
+                        GradleRunner
+                            .create()
+                            .withProjectDir(projectDir.toFile())
+                            .withPluginClasspath()
+                            .withArguments(":poetimize")
+                            .build()
+                    then("Generator tasks runs but it skips as the configuration is missing") {
+                        val poetimizeBuildTask = buildResult.tasks.find { it.path == ":poetimize" }
+                        poetimizeBuildTask shouldNotBe null
+                        poetimizeBuildTask?.outcome shouldBe TaskOutcome.SUCCESS
+                        buildResult.output.shouldContainIgnoringCase("skipping")
+                    }
                 }
             }
         }
-    }
-})
+    })
