@@ -82,9 +82,7 @@
                 <version>3.3.0</version>
                 <configuration>
                     <kotlin>
-                        <ktlint>
-                            <version>0.48.2</version>
-                        </ktlint>
+                        <ktlint/>
                     </kotlin>
                 </configuration>
             </plugin>
