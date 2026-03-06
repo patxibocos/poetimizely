@@ -79,12 +79,10 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.3.0</version>
                 <configuration>
                     <kotlin>
-                        <ktlint>
-                            <version>0.48.2</version>
-                        </ktlint>
+                        <ktlint/>
                     </kotlin>
                 </configuration>
             </plugin>

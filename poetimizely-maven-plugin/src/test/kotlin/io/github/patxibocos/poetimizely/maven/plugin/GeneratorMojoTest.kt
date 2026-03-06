@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test
 import java.io.File
 
 class GeneratorMojoTest : AbstractMojoTestCase() {
-
     @BeforeEach
     override fun setUp() {
         super.setUp()
@@ -24,9 +23,10 @@ class GeneratorMojoTest : AbstractMojoTestCase() {
         val generatorMojo = super.lookupMojo("poetimize", testPom) as GeneratorMojo?
         requireNotNull(generatorMojo)
         val sourceDirectory = "src/test/kotlin"
-        generatorMojo.project = mockk {
-            every { compileSourceRoots } returns listOf(sourceDirectory)
-        }
+        generatorMojo.project =
+            mockk {
+                every { compileSourceRoots } returns listOf(sourceDirectory)
+            }
         val experimentsCode = "experiments generated code we don't care at this point"
         val featuresCode = "features generated code we don't care at this point"
         mockCodeGenerators(generatorMojo, experimentsCode, featuresCode)
@@ -48,7 +48,11 @@ class GeneratorMojoTest : AbstractMojoTestCase() {
         }
     }
 
-    private fun mockCodeGenerators(generatorMojo: GeneratorMojo, experimentsCode: String, featuresCode: String) {
+    private fun mockCodeGenerators(
+        generatorMojo: GeneratorMojo,
+        experimentsCode: String,
+        featuresCode: String,
+    ) {
         mockkStatic("io.github.patxibocos.poetimizely.core.Api")
         coEvery {
             codeForExperiments(
